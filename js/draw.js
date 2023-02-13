@@ -24,6 +24,8 @@ function drawSideCanvas(canvas) {
 function drawAerialCanvas(canvas) {
     console.log("Drawing the aerial")
     canvas = drawBackground(canvas)
+    canvas = drawAerialBeach(canvas)
+    canvas = drawAerialDune(canvas)
     return canvas
 }
 
@@ -125,5 +127,64 @@ function drawSideDune(canvas) {
 
 // Draws the aerial view of the beach object
 function drawAerialBeach(canvas) {
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+    var line = [
+        {"x": 0, "y": cH},
+        {"x": 0, "y": cH * (1 - beach.getBeachWidth)},
+        {"x": cW, "y": cH * (1 - beach.getBeachWidth)},
+        {"x": cW, "y": cH},
+        {"x": 0, "y": cH}
+    ];
+    
+    var lineFunction = d3.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; });
+    
+    canvas.append("path")
+        .attr("d", lineFunction(line))
+        .attr("stroke", "black")
+        .attr("stroke-width", 0.5)
+        .attr("fill", "#FAFAD2");
 
+    canvas.append("text")
+        .attr("x", canvasProp.getCanvasWidth * 0.475)
+        .attr("y", canvasProp.getCanvasHeight * 0.8)
+        .attr("text-anchor", "middle")
+        .style("font-size", "24px")
+        .text("Beach");
+    
+    return canvas
+}
+
+// Draws the aerial view of the dune object
+function drawAerialDune(canvas) {
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+    var line = [
+        {"x": 0, "y": cH * dune.getDuneWidth},
+        {"x": 0, "y": 0},
+        {"x": cW, "y": 0},
+        {"x": cW, "y": cH * dune.getDuneWidth},
+        {"x": 0, "y": cH * dune.getDuneWidth}
+    ];
+    
+    var lineFunction = d3.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; });
+    
+    canvas.append("path")
+        .attr("d", lineFunction(line))
+        .attr("stroke", "black")
+        .attr("stroke-width", 0.5)
+        .attr("fill", "#FAFAD2");
+
+    canvas.append("text")
+        .attr("x", canvasProp.getCanvasWidth * 0.475)
+        .attr("y", canvasProp.getCanvasHeight * 0.1)
+        .attr("text-anchor", "middle")
+        .style("font-size", "24px")
+        .text("Dune");
+    
+    return canvas
 }
