@@ -1,0 +1,25 @@
+.page1 {
+    background-color: white;
+}
+
+.page1 .title {
+    margin-bottom: 20px;
+    background-color: #B2FFFF;
+}
+
+.page1 .instructions {
+    margin-bottom: 10px;
+}
+
+.page1 .instructions .info {
+    background-color: #E8E8E8;
+
+}
+
+.page1 .canvas {
+    background-color: #E8E8E8;
+    min-width: 950px;
+    max-width: 950px;
+    max-height: 500px;
+    min-height: 500px;
+}
