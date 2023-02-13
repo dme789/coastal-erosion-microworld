@@ -2,6 +2,7 @@
 export const canvasProp = {
     height: 500,
     width: 950,
+    realHeight: 15,
 
     get getCanvasHeight() {
         return this.height;
@@ -14,17 +15,19 @@ export const canvasProp = {
     },
     set setCanvasWidth(val) {
         this.width = val;
+    },
+    get getRealHeight() {
+        return this.realHeight;
     }
 };
 
 // Beach object and relevant functions
 // Attributes in terms of % of canvas
 export const beach = {
-    width: 0.8,
-    length: 0,
-    slope: 0.15,
+    width: 0.8,     
     minHeight: 0.75,
     maxHeight: 0.5,
+    slope: 0.3125,      // rise/run => min
 
     get getBeachWidth() {
         return this.width;
@@ -32,17 +35,11 @@ export const beach = {
     set setBeachWidth(val) {
         this.width = val;
     },
-    get getBeachLength() {
-        return this.length;
-    },
-    set setBeachLength(val) {
-        this.length = val;
-    },
     get getBeachSlope() {
         return this.slope;
     },
-    set setBeachSlope(val) {
-        this.slope = val
+    reCalculateSlope: function() {
+        this.slope = (this.maxHeight - this.minHeight) / this.width;
     },
     get getBeachMaxHeight() {
         return this.maxHeight;
@@ -64,6 +61,7 @@ export const dune = {
     height: 0.15,
     bankLength: 0.01,
     width: 1- beach.getBeachWidth,
+    slope: 15,
 
     get getDuneHeight() {
         return this.height
@@ -79,5 +77,46 @@ export const dune = {
     },
     get getDuneWidth() {
         return this.width
-    }
+    },
+    get getSlope() {
+        return this.slope;
+    },
+    reCalculateSlope: function() {
+        this.slope = this.height / this.bankLength;
+    },
 };
+
+export const sea = {
+    totalSeaRise: 0,    // % of canvas
+    length: 0.2,        // % of canvas
+    height: 0.0625,     // % of canvas
+
+    get getSeaRise() {
+        return this.totalSeaRise;
+    },
+    set setSeaRise(val) {
+        this.totalSeaRise = val;
+    },
+    get getLength() {
+        return this.length;
+    },
+    set setLength(val) {
+        this.baseHeight = val;
+    },
+    get getHeight() {
+        return this.height;
+    },
+    // this function takes in a value as meters, and calculates the result as % of canvas
+    increaseSeaRise: function(val) {
+        var tempSeaRise = (1 / canvasProp.getRealHeight) * (this.totalSeaRise + val);
+        console.log(tempSeaRise)
+        this.setSeaRise = tempSeaRise;
+        this.height = this.height + tempSeaRise;
+        if (this.length < beach.getBeachWidth) {
+            this.length = this.height / beach.getBeachSlope;
+        } else {
+            console.log(this.height / dune.getSlope)
+            this.length = this.length + (this.height / dune.getSlope);
+        }
+    }
+}
