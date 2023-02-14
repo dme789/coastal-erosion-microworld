@@ -3,6 +3,8 @@ export const canvasProp = {
     height: 500,
     width: 950,
     realHeight: 15,
+    state: 0,       // 0 = side view, 1 = aerial view
+    year: 0,
 
     get getCanvasHeight() {
         return this.height;
@@ -18,7 +20,19 @@ export const canvasProp = {
     },
     get getRealHeight() {
         return this.realHeight;
-    }
+    },
+    get getState() {
+        return this.state;
+    },
+    set setState(val) {
+        this.state = val;
+    },
+    get getYear() {
+        return this.year;
+    },
+    incrementYear: function() {
+        this.year = this.year + 1;
+    },
 };
 
 // Beach object and relevant functions
@@ -117,7 +131,6 @@ export const sea = {
             this.height = this.height + tempSeaRise;
             var duneWaterLine = beach.getBeachMaxHeight - (beach.getBeachMinHeight - this.height);
             this.length = this.length + (duneWaterLine/ dune.getSlope);
-            console.log(this.length)
         } else {
             this.height = this.height + tempSeaRise;
             this.length = 1

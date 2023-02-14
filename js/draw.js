@@ -8,6 +8,7 @@ var canvas = d3.select("#canvas")
     .attr("height", canvasProp.getCanvasHeight);
 
 drawSideCanvas(canvas)
+document.getElementById("currYear").innerHTML = 2023;
 
 // *************************** Main Draw Functions **********************************
 
@@ -42,12 +43,12 @@ function drawBackground(canvas) {
     return canvas
 }
 
-// *************************** Detect View Change Functions **********************************
+// *************************** User Input Change Functions **********************************
 const sideViewOption = document.getElementById('sideViewButton');
 sideViewOption.addEventListener('click', reDrawSideCanvas);
 
 function reDrawSideCanvas() {
-    sea.increaseSeaRise(0.1)
+    canvasProp.setState = 0
     drawSideCanvas(canvas)
 }
 
@@ -55,9 +56,38 @@ const aerialViewOption = document.getElementById('aerialViewButton');
 aerialViewOption.addEventListener('click', reDrawAerialCanvas);
 
 function reDrawAerialCanvas() {
+    canvasProp.setState = 1
     drawAerialCanvas(canvas)
 }
 
+var timeSlider = d3.select("#timeSlider");
+
+timeSlider.on("input", function() {
+    if (this.value > canvasProp.getYear) {
+        incrementYear();
+    }
+});
+
+const playForwardOption = document.getElementById('playButton');
+playForwardOption.addEventListener('click', skipYears);
+
+function skipYears() {
+    for (let i = 0; i < 5; i++) {       // skips 5 years
+        if (canvasProp.getYear < 50) {
+            incrementYear()
+        }
+    }
+}
+
+function incrementYear() {
+    var seaRise = document.getElementById("seaRiseSlider").value;
+    canvasProp.incrementYear()
+    sea.increaseSeaRise(seaRise / 100);    // meters to cm
+    document.getElementById("timeSlider").setAttribute("value", canvasProp.getYear)
+    if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
+    else {drawAerialCanvas(canvas)}
+    document.getElementById("currYear").innerHTML = (2023 + canvasProp.getYear);
+}
 
 // *************************** Side View Draw Functions **********************************
 

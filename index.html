@@ -58,12 +58,31 @@
     <div class="container text-center">
         <div class="row">
             <div class="col-1">
+                <div>
+                    <label for="seaRiseSlider">Sea Rise</label>
+                    <input type="range" min="1" max="5" value="1" class="seaRiseSlider" id="seaRiseSlider">
+                </div>
             </div>
             <div class="col-10">
                 <div class ="canvas" id="canvas"></div>
             </div>
             <div class="col-1">
             </div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-2">
+                <button type="button" id="playButton">Skip 5 Years</button>
+            </div>
+            <div class="col-2">
+                <span>Current Year: </span>
+                <span id="currYear"></span>
+            </div>
+            <div class="col-6">
+                <label for="timeSlider">Time</label>
+                <input type="range" min="0" max="50" value="0" class="timeSlider" id="timeSlider">
+            </div>
+            <div class="col-1"></div>
         </div>
     </div>
 
