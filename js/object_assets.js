@@ -109,14 +109,18 @@ export const sea = {
     // this function takes in a value as meters, and calculates the result as % of canvas
     increaseSeaRise: function(val) {
         var tempSeaRise = (1 / canvasProp.getRealHeight) * (this.totalSeaRise + val);
-        console.log(tempSeaRise)
-        this.setSeaRise = tempSeaRise;
-        this.height = this.height + tempSeaRise;
-        if (this.length < beach.getBeachWidth) {
+        this.totalSeaRise = this.totalSeaRise + tempSeaRise;
+        if ((beach.getBeachMinHeight - this.height) >= beach.getBeachMaxHeight) {
+            this.height = this.height + tempSeaRise;
             this.length = this.height / beach.getBeachSlope;
+        } else if ((beach.getBeachMinHeight - this.height) >= (beach.getBeachMaxHeight - dune.getDuneHeight)) {
+            this.height = this.height + tempSeaRise;
+            var duneWaterLine = beach.getBeachMaxHeight - (beach.getBeachMinHeight - this.height);
+            this.length = this.length + (duneWaterLine/ dune.getSlope);
+            console.log(this.length)
         } else {
-            console.log(this.height / dune.getSlope)
-            this.length = this.length + (this.height / dune.getSlope);
+            this.height = this.height + tempSeaRise;
+            this.length = 1
         }
     }
 }
