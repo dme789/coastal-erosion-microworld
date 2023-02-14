@@ -83,7 +83,7 @@ function incrementYear() {
     var seaRise = document.getElementById("seaRiseSlider").value;
     canvasProp.incrementYear()
     sea.increaseSeaRise(seaRise / 100);    // meters to cm
-    document.getElementById("timeSlider").setAttribute("value", canvasProp.getYear)
+    document.getElementById("timeSlider").value = canvasProp.getYear;
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
     else {drawAerialCanvas(canvas)}
     document.getElementById("currYear").innerHTML = (2023 + canvasProp.getYear);
