@@ -1,4 +1,4 @@
-import {canvasProp, beach, dune, sea} from './object_assets.js';
+import {canvasProp, beach, dune, sea, tide} from './object_assets.js';
 
 // Setups up initial canvas as svg to draw on.
 // Then calls drawSideCanvas to draw the side view initially
@@ -17,6 +17,8 @@ function drawSideCanvas(canvas) {
     console.log("Drawing the Side")
     canvas = drawBackground(canvas)
     canvas = drawSideSea(canvas)
+    var tideOption = getSelectedTide();
+    canvas = drawSideTide(canvas, tideOption);
     canvas = drawSideBeach(canvas)
     canvas = drawSideDune(canvas)
     return canvas
@@ -29,6 +31,7 @@ function drawAerialCanvas(canvas) {
     canvas = drawAerialBeach(canvas)
     canvas = drawAerialDune(canvas)
     canvas = drawAerialSea(canvas)
+    var tideOption = getSelectedTide();
     return canvas
 }
 
@@ -87,6 +90,27 @@ function incrementYear() {
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
     else {drawAerialCanvas(canvas)}
     document.getElementById("currYear").innerHTML = (2023 + canvasProp.getYear);
+}
+
+// Detects a change in the tide option selected
+var tideOptions = document.getElementsByName('tideSelection');
+tideOptions.forEach(function(option) {
+    option.addEventListener('change', function() {
+        if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
+        else {drawAerialCanvas(canvas)}
+    });
+});
+
+// Gets the tide option selected
+function getSelectedTide() {
+    var options = document.getElementsByName('tideSelection')
+    for (var i = 0; i < options.length; i++) {
+        if (options[i].checked) {
+            tide.calculateTideLength(options[i].value);
+            return options[i].value;
+        }
+    }
+    return null
 }
 
 // *************************** Side View Draw Functions **********************************
@@ -181,6 +205,41 @@ function drawSideSea(canvas) {
       .attr("text-anchor", "middle")
       .style("font-size", "24px")
       .text("Sea");
+
+    return canvas
+}
+
+function drawSideTide(canvas, tideOption) {
+    var tH = -1;
+    if (tideOption == 1) {tH = tide.getLow}
+    else if (tideOption == 2) {tH = tide.getAverage()}
+    else {tH = tide.getHigh}
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+    var line = [
+        {"x": 0, "y": cH * (beach.getBeachMinHeight - sea.getHeight)},
+        {"x": 0, "y": cH * (beach.getBeachMinHeight - sea.getHeight - tH)},
+        {"x": cW * tide.getLength, "y": cH * (beach.getBeachMinHeight - sea.getHeight - tH)},
+        {"x": cW * tide.getLength, "y": cH * (beach.getBeachMinHeight - sea.getHeight)},
+        {"x": 0, "y": cH * (beach.getBeachMinHeight - sea.getHeight)}
+    ];
+
+    var lineFunction = d3.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; });
+    
+    canvas.append("path")
+        .attr("d", lineFunction(line))
+        .attr("stroke", "red")
+        .attr("stroke-width", 1)
+        .attr("fill", "#87CEFA")
+    
+    canvas.append("text")
+      .attr("x", 50)
+      .attr("y", 300)
+      .attr("text-anchor", "middle")
+      .style("font-size", "24px")
+      .text("Tide");
 
     return canvas
 }

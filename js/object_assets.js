@@ -137,3 +137,47 @@ export const sea = {
         }
     }
 }
+
+export const tide = {
+    low: 0,
+    high: 0.1,
+    length: 0,
+
+    get getLow() {
+        return this.low;
+    },
+    set setLow(val) {
+        this.low = val;
+    },
+    get getHigh() {
+        return this.high;
+    },
+    set setHigh(val) {
+        this.high = val;
+    },
+    get getLength() {
+        return this.length;
+    },
+    set setLength(val) {
+        this.length = val;
+    },
+    getAverage: function() {
+        return ((this.high - this.low) / 2) + this.low
+    },
+    calculateTideLength: function(tideOption) {
+        var tideHeight = -1;
+        if (tideOption == 1) {tideHeight = this.getLow}
+        else if (tideOption == 2) {tideHeight = this.getAverage()}
+        else {tideHeight = this.getHigh}
+        if ((beach.getBeachMinHeight - sea.height - tideHeight) >= beach.getBeachMaxHeight) {
+            var height = sea.height + tideHeight;
+            this.length = height / beach.getBeachSlope;
+        } else if ((beach.getBeachMinHeight - sea.height - tideHeight) >= (beach.getBeachMaxHeight - dune.getDuneHeight)) {
+            var height = sea.height + tideHeight;
+            var duneWaterLine = beach.getBeachMaxHeight - (beach.getBeachMinHeight - sea.height - tideHeight);
+            this.length = this.length + (duneWaterLine/ dune.getSlope);
+        } else {
+            this.length = 1
+        }
+    }
+}
