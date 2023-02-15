@@ -130,7 +130,7 @@ export const sea = {
         } else if ((beach.getBeachMinHeight - this.height) >= (beach.getBeachMaxHeight - dune.getDuneHeight)) {
             this.height = this.height + tempSeaRise;
             var duneWaterLine = beach.getBeachMaxHeight - (beach.getBeachMinHeight - this.height);
-            this.length = this.length + (duneWaterLine/ dune.getSlope);
+            this.length = beach.getBeachWidth + (duneWaterLine/ dune.getSlope);
         } else {
             this.height = this.height + tempSeaRise;
             this.length = 1
@@ -169,13 +169,13 @@ export const tide = {
         if (tideOption == 1) {tideHeight = this.getLow}
         else if (tideOption == 2) {tideHeight = this.getAverage()}
         else {tideHeight = this.getHigh}
-        if ((beach.getBeachMinHeight - sea.height - tideHeight) >= beach.getBeachMaxHeight) {
-            var height = sea.height + tideHeight;
+        if ((beach.getBeachMinHeight - sea.getHeight - tideHeight) >= beach.getBeachMaxHeight) {
+            var height = sea.getHeight + tideHeight;
             this.length = height / beach.getBeachSlope;
-        } else if ((beach.getBeachMinHeight - sea.height - tideHeight) >= (beach.getBeachMaxHeight - dune.getDuneHeight)) {
-            var height = sea.height + tideHeight;
-            var duneWaterLine = beach.getBeachMaxHeight - (beach.getBeachMinHeight - sea.height - tideHeight);
-            this.length = this.length + (duneWaterLine/ dune.getSlope);
+        } else if ((beach.getBeachMinHeight - sea.getHeight - tideHeight) >= (beach.getBeachMaxHeight - dune.getDuneHeight)) {
+            var height = sea.getHeight + tideHeight;
+            var duneWaterLine = beach.getBeachMaxHeight - (beach.getBeachMinHeight - sea.getHeight - height);
+            this.length = beach.getBeachWidth + (duneWaterLine/ dune.getSlope);
         } else {
             this.length = 1
         }

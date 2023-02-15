@@ -32,6 +32,7 @@ function drawAerialCanvas(canvas) {
     canvas = drawAerialDune(canvas)
     canvas = drawAerialSea(canvas)
     var tideOption = getSelectedTide();
+    if (tideOption != 1) {canvas = drawAerialTide(canvas, tideOption)}
     return canvas
 }
 
@@ -197,11 +198,11 @@ function drawSideSea(canvas) {
     
     canvas.append("path")
         .attr("d", lineFunction(line))
-        .attr("fill", "#87CEFA")
+        .attr("fill", "#79B9E1")
     
     canvas.append("text")
-      .attr("x", 50)
-      .attr("y", 350)
+      .attr("x", 20)
+      .attr("y", canvasProp.getCanvasHeight * 0.73)
       .attr("text-anchor", "middle")
       .style("font-size", "24px")
       .text("Sea");
@@ -227,19 +228,23 @@ function drawSideTide(canvas, tideOption) {
     var lineFunction = d3.line()
         .x(function(d) { return d.x; })
         .y(function(d) { return d.y; });
-    
+
+    console.log("Tide: " + tide.getLength)
+    console.log("Sea: " + sea.getLength)
+
     canvas.append("path")
         .attr("d", lineFunction(line))
-        .attr("stroke", "red")
-        .attr("stroke-width", 1)
         .attr("fill", "#87CEFA")
     
-    canvas.append("text")
-      .attr("x", 50)
-      .attr("y", 300)
-      .attr("text-anchor", "middle")
-      .style("font-size", "24px")
-      .text("Tide");
+    if (tideOption != 1) {
+        canvas.append("text")
+            .attr("x", 50)
+            .attr("y", (cH * (beach.getBeachMinHeight - sea.getHeight)) - 5)
+            .attr("text-anchor", "middle")
+            .style("font-size", "20px")
+            .text("Tide");
+
+    }
 
     return canvas
 }
@@ -327,7 +332,7 @@ function drawAerialSea(canvas) {
     
     canvas.append("path")
         .attr("d", lineFunction(line))
-        .attr("fill", "#87CEFA")
+        .attr("fill", "#79B9E1")
     
     canvas.append("text")
       .attr("x", canvasProp.getCanvasWidth * 0.475)
@@ -335,6 +340,39 @@ function drawAerialSea(canvas) {
       .attr("text-anchor", "middle")
       .style("font-size", "24px")
       .text("Sea");
+
+    return canvas
+}
+
+function drawAerialTide(canvas, tideOption) {
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+    var line = [
+        {"x": 0, "y": cH * (1 - sea.getLength)},
+        {"x": 0, "y": cH * (1 - tide.getLength)},
+        {"x": cW, "y": cH * (1 - tide.getLength)},
+        {"x": cW, "y": cH * (1 - sea.getLength)},
+        {"x": 0, "y": cH * (1 - sea.getLength)},
+    ];
+
+    console.log("Tide: " + tide.getLength)
+    console.log("Sea: " + sea.getLength)
+    var lineFunction = d3.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; });
+    
+    canvas.append("path")
+        .attr("d", lineFunction(line))
+        .attr("fill", "#87CEFA")
+    
+    if (tideOption != 1) {
+        canvas.append("text")
+            .attr("x", cW * 0.475)
+            .attr("y", cH * (1 - sea.getLength) - 10)
+            .attr("text-anchor", "middle")
+            .style("font-size", "24px")
+            .text("Tide");
+    }
 
     return canvas
 }
