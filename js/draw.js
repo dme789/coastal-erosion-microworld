@@ -139,9 +139,9 @@ function purchasePrevention() {
             preventions.decreaseBudget(prevention.value)
             document.getElementById("budgetRem").innerHTML = preventions.getBudget;
             let canvasElem = document.querySelector('#canvas')
-            canvasElem.addEventListener("click", function(e) {
+            canvasElem.addEventListener("click", function handler(e) {
                 var xClick = getMousePosCanvas(canvasElem, e)
-                const seaBee = seaBees
+                const seaBee = Object.create(seaBees)
                 seaBee.setLength = xClick + (seaBee.getWidth / 2);
                 preventions.addNew(seaBee)
                 if (canvasProp.getState == 0) {
@@ -149,7 +149,7 @@ function purchasePrevention() {
                     drawSideCanvas(canvas)
                 }
                 else {drawAerialCanvas(canvas)}
-                canvasElem.close();
+                e.currentTarget.removeEventListener(e.type, handler)
             })
         } else {
             window.alert("You do not have the budget available to make this purchase");
@@ -325,7 +325,9 @@ function drawSideMaxWave(canvas, tideOption) {
     var tempPs = []
     for (var i = 0; i < preventions.bought.length; i++) {
         if (preventions.bought[i].name == "seabees")
-            maxUnbroken = preventions.bought[i].length
+            if (maxUnbroken > preventions.bought[i].length) {
+                maxUnbroken = preventions.bought[i].length
+            }
             tempPs.push(preventions.bought[i])
     }
     
@@ -335,7 +337,7 @@ function drawSideMaxWave(canvas, tideOption) {
     for (var i = 0; i < tempPs.length; i++) {
         const prev = tempPs[i]
         if (prev.name == "seabees") {
-            canvas = drawSideWave(canvas, tH, cW, cH, prev.length, beach.getBeachWidth, waveHeight * prev.getWaveDecrease)
+            canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), beach.getBeachWidth, waveHeight * prev.getWaveDecrease)
         }
     }
     
