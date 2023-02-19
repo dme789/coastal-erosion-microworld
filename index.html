@@ -55,9 +55,9 @@
         </div>
     </div>
 
-    <div class="container text-center">
+    <div class="container-fluid text-center">
         <div class="row">
-            <div class="col-1">
+            <div class="col-2">
                 <div>
                     <label for="seaRiseSlider">Sea Rise</label>
                     <input type="range" min="1" max="5" value="1" class="seaRiseSlider" id="seaRiseSlider">
@@ -65,17 +65,27 @@
                 <form>
                     <p>Tide Selection</p>
                     <input type="radio" id="lowTide" name="tideSelection" value="1">
-                    <label for="sand">Low</label><br>
+                    <label for="lowTide">Low</label><br>
                     <input type="radio" id="averageTide" name="tideSelection" value="2" checked="checked">
-                    <label for="seaWall">Average</label><br>
+                    <label for="averageTide">Average</label><br>
                     <input type="radio" id="highTide" name="tideSelection" value="3">
-                    <label for="groyne">High</label>
+                    <label for="highTide">High</label>
                 </form> 
             </div>
-            <div class="col-10">
+            <div class="col-8">
                 <div class ="canvas" id="canvas"></div>
             </div>
-            <div class="col-1">
+            <div class="col-2">
+                <span>Budget Remaining: €</span>
+                <span id="budgetRem"></span>
+                <form>
+                    <p>Prevention Options</p>
+                    <input type="radio" id="seabees" name="preventionBought" value="5000">
+                    <label for="seabees">Seabees</label><br>
+                    <input type="radio" id="seawall" name="preventionBought" value="10001">
+                    <label for="seawall">Sea Wall</label><br>
+                    <button type="button" id="confirmedPurchase">Confirm Purchase</button>
+                </form> 
             </div>
         </div>
         <div class="row">

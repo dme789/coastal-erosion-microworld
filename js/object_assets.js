@@ -39,9 +39,9 @@ export const canvasProp = {
 // Attributes in terms of % of canvas
 export const beach = {
     width: 0.8,     
-    minHeight: 0.75,
-    maxHeight: 0.5,
-    slope: 0.3125,      // rise/run => min
+    minHeight: 0.65,
+    maxHeight: 0.55,
+    slope: 0.125,      // rise/run => min
 
     get getBeachWidth() {
         return this.width;
@@ -102,8 +102,8 @@ export const dune = {
 
 export const sea = {
     totalSeaRise: 0,    // % of canvas
-    length: 0.2,        // % of canvas
-    height: 0.0625,     // % of canvas
+    length: 0,        // % of canvas
+    height: 0,     // % of canvas
 
     get getSeaRise() {
         return this.totalSeaRise;
@@ -122,7 +122,7 @@ export const sea = {
     },
     // this function takes in a value as meters, and calculates the result as % of canvas
     increaseSeaRise: function(val) {
-        var tempSeaRise = (1 / canvasProp.getRealHeight) * (this.totalSeaRise + val);
+        var tempSeaRise = (1 / canvasProp.getRealHeight) * val;
         this.totalSeaRise = this.totalSeaRise + tempSeaRise;
         if ((beach.getBeachMinHeight - this.height) >= beach.getBeachMaxHeight) {
             this.height = this.height + tempSeaRise;
@@ -179,5 +179,61 @@ export const tide = {
         } else {
             this.length = 1
         }
+    }
+}
+
+export const preventions = {
+    budget: 10000,
+    bought: [],
+
+    get getBudget() {
+        return this.budget;
+    },
+    set setBudget(val) {
+        this.budget = val;
+    },
+    increaseBudget: function(val) {
+        this.budget = this.budget + val;
+    },
+    decreaseBudget: function(val) {
+        this.budget = this.budget - val;
+    },
+    get getBought() {
+        return this.bought;
+    },
+    set setBought(val) {
+        this.bought = val;
+    },
+    addNew: function(newPrevention) {
+        this.bought.push(newPrevention)
+    }
+}
+
+export const seaBees = {
+    name: "seabees",
+    height: 0.08,
+    width: 0.05,
+    length: 0,
+
+    get getName() {
+        return this.name;
+    },
+    get getHeight() {
+        return this.height;
+    },
+    set setHeight(val) {
+        this.height = val;
+    },
+    get getWidth() {
+        return this.width
+    },
+    set setWidth(val) {
+        this.width = val;
+    },
+    get getLength() {
+        return this.length
+    },
+    set setLength(val) {
+        this.length = val;
     }
 }

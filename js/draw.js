@@ -1,4 +1,4 @@
-import {canvasProp, beach, dune, sea, tide} from './object_assets.js';
+import {canvasProp, beach, dune, sea, tide, preventions, seaBees} from './object_assets.js';
 
 // Setups up initial canvas as svg to draw on.
 // Then calls drawSideCanvas to draw the side view initially
@@ -9,6 +9,7 @@ var canvas = d3.select("#canvas")
 
 drawSideCanvas(canvas)
 document.getElementById("currYear").innerHTML = 2023;
+document.getElementById("budgetRem").innerHTML = preventions.getBudget;
 
 // *************************** Main Draw Functions **********************************
 
@@ -19,6 +20,7 @@ function drawSideCanvas(canvas) {
     canvas = drawSideSea(canvas)
     var tideOption = getSelectedTide();
     canvas = drawSideTide(canvas, tideOption);
+    canvas = drawSidePreventions(canvas)
     canvas = drawSideBeach(canvas)
     canvas = drawSideDune(canvas)
     return canvas
@@ -33,6 +35,7 @@ function drawAerialCanvas(canvas) {
     canvas = drawAerialSea(canvas)
     var tideOption = getSelectedTide();
     if (tideOption != 1) {canvas = drawAerialTide(canvas, tideOption)}
+    canvas = drawAerialPreventions(canvas)
     return canvas
 }
 
@@ -86,11 +89,13 @@ function skipYears() {
 function incrementYear() {
     var seaRise = document.getElementById("seaRiseSlider").value;
     canvasProp.incrementYear()
-    sea.increaseSeaRise(seaRise / 100);    // meters to cm
+    sea.increaseSeaRise(seaRise / 500);    // meters to cm
+    preventions.increaseBudget(1000);
     document.getElementById("timeSlider").value = canvasProp.getYear;
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
     else {drawAerialCanvas(canvas)}
     document.getElementById("currYear").innerHTML = (2023 + canvasProp.getYear);
+    document.getElementById("budgetRem").innerHTML = preventions.getBudget;
 }
 
 // Detects a change in the tide option selected
@@ -109,6 +114,36 @@ function getSelectedTide() {
         if (options[i].checked) {
             tide.calculateTideLength(options[i].value);
             return options[i].value;
+        }
+    }
+    return null
+}
+
+const preventionPurchase = document.getElementById('confirmedPurchase');
+preventionPurchase.addEventListener('click', purchasePrevention);
+
+
+function purchasePrevention() {
+    var prevention = getSelectedPrevention()
+    if (prevention != null) {
+        if (prevention.value <= preventions.getBudget) {
+            preventions.decreaseBudget(prevention.value)
+            document.getElementById("budgetRem").innerHTML = preventions.getBudget;
+            preventions.addNew(seaBees)
+        } else {
+            window.alert("You do not have the budget available to make this purchase");
+        }
+    } else {window.alert("You need to select a prevention to buy!");}
+    if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
+    else {drawAerialCanvas(canvas)}
+}
+
+// Gets the prevention option selected
+function getSelectedPrevention() {
+    var options = document.getElementsByName('preventionBought')
+    for (var i = 0; i < options.length; i++) {
+        if (options[i].checked) {
+            return options[i];
         }
     }
     return null
@@ -200,12 +235,14 @@ function drawSideSea(canvas) {
         .attr("d", lineFunction(line))
         .attr("fill", "#79B9E1")
     
-    canvas.append("text")
-      .attr("x", 20)
-      .attr("y", canvasProp.getCanvasHeight * 0.73)
-      .attr("text-anchor", "middle")
-      .style("font-size", "24px")
-      .text("Sea");
+    if (sea.getHeight > 0 || sea.getLength > 0) {
+        canvas.append("text")
+            .attr("x", 20)
+            .attr("y", ((cH * beach.getBeachMinHeight)) - 5)
+            .attr("text-anchor", "middle")
+            .style("font-size", "20px")
+            .text("Sea");
+    }    
 
     return canvas
 }
@@ -229,9 +266,6 @@ function drawSideTide(canvas, tideOption) {
         .x(function(d) { return d.x; })
         .y(function(d) { return d.y; });
 
-    console.log("Tide: " + tide.getLength)
-    console.log("Sea: " + sea.getLength)
-
     canvas.append("path")
         .attr("d", lineFunction(line))
         .attr("fill", "#87CEFA")
@@ -247,6 +281,42 @@ function drawSideTide(canvas, tideOption) {
     }
 
     return canvas
+}
+
+function drawSidePreventions(canvas) {
+    for(var i = 0; i < preventions.bought.length; i++) {
+        var prev = preventions.bought[i]
+        if (prev.name == "seabees") {
+            canvas = drawSideSeaBee(prev, canvas)
+        } else {
+            console.log("do something")
+        }
+    }
+    return canvas;
+}
+
+function drawSideSeaBee(sbee, canvas) {
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+    var line = [
+        {"x": cW * (beach.getBeachWidth - 0.05), "y": cH * (beach.getBeachMaxHeight + 0.05)},
+        {"x": cW * (beach.getBeachWidth - 0.05), "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
+        {"x": cW * (beach.getBeachWidth - 0.05 - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
+        {"x": cW * (beach.getBeachWidth - 0.05 - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05)},
+        {"x": cW * (beach.getBeachWidth - 0.05), "y": cH * (beach.getBeachMaxHeight + 0.05)}
+    ];
+    
+    var lineFunction = d3.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; });
+    
+    canvas.append("path")
+        .attr("d", lineFunction(line))
+        .attr("stroke", "black")
+        .attr("stroke-width", 0.5)
+        .attr("fill", "#808080");
+
+    return canvas;
 }
 
 // *************************** Aerial View Draw Functions **********************************
@@ -334,12 +404,14 @@ function drawAerialSea(canvas) {
         .attr("d", lineFunction(line))
         .attr("fill", "#79B9E1")
     
-    canvas.append("text")
-      .attr("x", canvasProp.getCanvasWidth * 0.475)
-      .attr("y", canvasProp.getCanvasHeight * 0.9)
-      .attr("text-anchor", "middle")
-      .style("font-size", "24px")
-      .text("Sea");
+    if (sea.getHeight > 0 || sea.getLength > 0) {
+        canvas.append("text")
+            .attr("x", canvasProp.getCanvasWidth * 0.475)
+            .attr("y", canvasProp.getCanvasHeight * 0.9)
+            .attr("text-anchor", "middle")
+            .style("font-size", "24px")
+            .text("Sea");
+    }
 
     return canvas
 }
@@ -355,8 +427,6 @@ function drawAerialTide(canvas, tideOption) {
         {"x": 0, "y": cH * (1 - sea.getLength)},
     ];
 
-    console.log("Tide: " + tide.getLength)
-    console.log("Sea: " + sea.getLength)
     var lineFunction = d3.line()
         .x(function(d) { return d.x; })
         .y(function(d) { return d.y; });
@@ -375,4 +445,32 @@ function drawAerialTide(canvas, tideOption) {
     }
 
     return canvas
+}
+
+function drawAerialPreventions(canvas) {
+    for(var i = 0; i < preventions.bought.length; i++) {
+        var prev = preventions.bought[i]
+        if (prev.name == "seabees") {
+            canvas = drawAerialSeaBee(canvas)
+        } else {
+            console.log("do something")
+        }
+    }
+    return canvas;
+}
+
+function drawAerialSeaBee(canvas) {
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+
+    for (var i = 0; i < cW; i = i + 25) {
+        canvas.append('image')
+            .attr("xlink:href", "imgs/seabeeAerial.png")
+            .attr('width', 21)
+            .attr('height', 21)
+            .attr("x", 0 + i)
+            .attr("y", cH * (1 - beach.getBeachWidth + 0.1));
+    }
+
+    return canvas;
 }
