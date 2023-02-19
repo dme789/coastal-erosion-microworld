@@ -138,12 +138,19 @@ function purchasePrevention() {
         if (prevention.value <= preventions.getBudget) {
             preventions.decreaseBudget(prevention.value)
             document.getElementById("budgetRem").innerHTML = preventions.getBudget;
-            preventions.addNew(seaBees)
-            if (canvasProp.getState == 0) {
-                canvas = drawSidePreventions(canvas)
-                drawSideCanvas(canvas)
-            }
-            else {drawAerialCanvas(canvas)}
+            let canvasElem = document.querySelector('#canvas')
+            canvasElem.addEventListener("click", function(e) {
+                var xClick = getMousePosCanvas(canvasElem, e)
+                const seaBee = seaBees
+                seaBee.setLength = xClick + (seaBee.getWidth / 2);
+                preventions.addNew(seaBee)
+                if (canvasProp.getState == 0) {
+                    canvas = drawSidePreventions(canvas)
+                    drawSideCanvas(canvas)
+                }
+                else {drawAerialCanvas(canvas)}
+                canvasElem.close();
+            })
         } else {
             window.alert("You do not have the budget available to make this purchase");
         }
@@ -159,6 +166,15 @@ function getSelectedPrevention() {
         }
     }
     return null
+}
+
+// Gets position of mouse click from user as % of canvas
+function getMousePosCanvas(canvas, event) {
+    let rect = canvas.getBoundingClientRect();
+    let x = (event.clientX - rect.left) / canvasProp.getCanvasWidth;
+    let y = (event.clientY - rect.top) / canvasProp.getCanvasHeight;
+    console.log(x)
+    return x;
 }
 
 // *************************** Side View Draw Functions **********************************
@@ -340,7 +356,6 @@ function drawSideWave(canvas, tH, cW, cH, xmin, xmax, waveH) {
     }
     line.push({"x": cW * xmax, "y": cH * (beach.getBeachMinHeight - sea.getHeight - tH)})
 
-    console.log(line)
     if (line != []) {
         var lineFunction = d3.line()
             .x(function(d) { return d.x; })
@@ -369,14 +384,12 @@ function drawSidePreventions(canvas) {
 function drawSideSeaBee(sbee, canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
-    var defaultX = (beach.getBeachWidth - 0.05);
-    sbee.setLength = defaultX - sbee.getWidth;
     var line = [
-        {"x": cW * defaultX, "y": cH * (beach.getBeachMaxHeight + 0.05)},
-        {"x": cW * defaultX, "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
-        {"x": cW * (defaultX - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
-        {"x": cW * (defaultX - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05)},
-        {"x": cW * defaultX, "y": cH * (beach.getBeachMaxHeight + 0.05)}
+        {"x": cW * sbee.getLength, "y": cH * (beach.getBeachMaxHeight + 0.05)},
+        {"x": cW * sbee.getLength, "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
+        {"x": cW * (sbee.getLength - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
+        {"x": cW * (sbee.getLength - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05)},
+        {"x": cW * sbee.getLength, "y": cH * (beach.getBeachMaxHeight + 0.05)}
     ];
     
     var lineFunction = d3.line()
