@@ -524,7 +524,7 @@ function drawAerialPreventions(canvas) {
     for(var i = 0; i < preventions.bought.length; i++) {
         var prev = preventions.bought[i]
         if (prev.name == "seabees") {
-            canvas = drawAerialSeaBee(canvas)
+            canvas = drawAerialSeaBee(canvas, prev)
         } else {
             console.log("do something")
         }
@@ -532,7 +532,7 @@ function drawAerialPreventions(canvas) {
     return canvas;
 }
 
-function drawAerialSeaBee(canvas) {
+function drawAerialSeaBee(canvas, seeB) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
 
@@ -542,7 +542,7 @@ function drawAerialSeaBee(canvas) {
             .attr('width', 21)
             .attr('height', 21)
             .attr("x", 0 + i)
-            .attr("y", cH * (1 - beach.getBeachWidth + 0.1));
+            .attr("y", cH * (1 - beach.getBeachWidth + 0.1 - seeB.getWidth));
     }
 
     return canvas;
