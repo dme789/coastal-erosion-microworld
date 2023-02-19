@@ -1,4 +1,4 @@
-import {canvasProp, beach, dune, sea, tide, preventions, seaBees} from './object_assets.js';
+import {canvasProp, beach, dune, sea, tide, maxWave, preventions, seaBees} from './object_assets.js';
 
 // Setups up initial canvas as svg to draw on.
 // Then calls drawSideCanvas to draw the side view initially
@@ -20,6 +20,7 @@ function drawSideCanvas(canvas) {
     canvas = drawSideSea(canvas)
     var tideOption = getSelectedTide();
     canvas = drawSideTide(canvas, tideOption);
+    canvas = drawSideMaxWave(canvas, tideOption)
     canvas = drawSidePreventions(canvas)
     canvas = drawSideBeach(canvas)
     canvas = drawSideDune(canvas)
@@ -75,8 +76,17 @@ timeSlider.on("input", function() {
     }
 });
 
+var waveSlider = d3.select("#maxWaveHeightSlider");
+
+waveSlider.on("input", function() {
+    maxWave.setHeight = this.value;
+    if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
+    else {drawAerialCanvas(canvas)}
+});
+
 const playForwardOption = document.getElementById('playButton');
 playForwardOption.addEventListener('click', skipYears);
+
 
 function skipYears() {
     for (let i = 0; i < 5; i++) {       // skips 5 years
@@ -122,7 +132,6 @@ function getSelectedTide() {
 const preventionPurchase = document.getElementById('confirmedPurchase');
 preventionPurchase.addEventListener('click', purchasePrevention);
 
-
 function purchasePrevention() {
     var prevention = getSelectedPrevention()
     if (prevention != null) {
@@ -130,12 +139,15 @@ function purchasePrevention() {
             preventions.decreaseBudget(prevention.value)
             document.getElementById("budgetRem").innerHTML = preventions.getBudget;
             preventions.addNew(seaBees)
+            if (canvasProp.getState == 0) {
+                canvas = drawSidePreventions(canvas)
+                drawSideCanvas(canvas)
+            }
+            else {drawAerialCanvas(canvas)}
         } else {
             window.alert("You do not have the budget available to make this purchase");
         }
     } else {window.alert("You need to select a prevention to buy!");}
-    if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
-    else {drawAerialCanvas(canvas)}
 }
 
 // Gets the prevention option selected
@@ -283,6 +295,65 @@ function drawSideTide(canvas, tideOption) {
     return canvas
 }
 
+function drawSideMaxWave(canvas, tideOption) {
+    var waveHeight = maxWave.getHeight / 4  // factored down by 75%
+    var tH = -1;
+    if (tideOption == 1) {tH = tide.getLow}
+    else if (tideOption == 2) {tH = tide.getAverage()}
+    else {tH = tide.getHigh}
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+    
+    // Before Preventions
+    var maxUnbroken = tide.getLength;
+    var tempPs = []
+    for (var i = 0; i < preventions.bought.length; i++) {
+        if (preventions.bought[i].name == "seabees")
+            maxUnbroken = preventions.bought[i].length
+            tempPs.push(preventions.bought[i])
+    }
+    
+    canvas = drawSideWave(canvas, tH, cW, cH, 0, maxUnbroken, waveHeight)
+
+    //After preventions
+    for (var i = 0; i < tempPs.length; i++) {
+        const prev = tempPs[i]
+        if (prev.name == "seabees") {
+            canvas = drawSideWave(canvas, tH, cW, cH, prev.length, beach.getBeachWidth, waveHeight * prev.getWaveDecrease)
+        }
+    }
+    
+    return canvas
+}
+
+function drawSideWave(canvas, tH, cW, cH, xmin, xmax, waveH) {
+    var line = [];
+    var highLow = 0;
+    for (var i = xmin; i < xmax; i = i + 0.05) {
+        var variableT = 0;
+        if (highLow % 2 != 0) {
+            variableT = waveH
+        }
+        var height = cH * (beach.getBeachMinHeight - sea.getHeight - tH - variableT)
+        line[highLow] = {"x": cW * i, "y": height}
+        highLow = highLow + 1;
+    }
+    line.push({"x": cW * xmax, "y": cH * (beach.getBeachMinHeight - sea.getHeight - tH)})
+
+    console.log(line)
+    if (line != []) {
+        var lineFunction = d3.line()
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; })
+            .curve(d3.curveNatural);
+
+        canvas.append("path")
+            .attr("d", lineFunction(line))
+            .attr("fill", "#ABDCFB")
+    }
+    return canvas
+}
+
 function drawSidePreventions(canvas) {
     for(var i = 0; i < preventions.bought.length; i++) {
         var prev = preventions.bought[i]
@@ -298,12 +369,14 @@ function drawSidePreventions(canvas) {
 function drawSideSeaBee(sbee, canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
+    var defaultX = (beach.getBeachWidth - 0.05);
+    sbee.setLength = defaultX - sbee.getWidth;
     var line = [
-        {"x": cW * (beach.getBeachWidth - 0.05), "y": cH * (beach.getBeachMaxHeight + 0.05)},
-        {"x": cW * (beach.getBeachWidth - 0.05), "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
-        {"x": cW * (beach.getBeachWidth - 0.05 - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
-        {"x": cW * (beach.getBeachWidth - 0.05 - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05)},
-        {"x": cW * (beach.getBeachWidth - 0.05), "y": cH * (beach.getBeachMaxHeight + 0.05)}
+        {"x": cW * defaultX, "y": cH * (beach.getBeachMaxHeight + 0.05)},
+        {"x": cW * defaultX, "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
+        {"x": cW * (defaultX - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
+        {"x": cW * (defaultX - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05)},
+        {"x": cW * defaultX, "y": cH * (beach.getBeachMaxHeight + 0.05)}
     ];
     
     var lineFunction = d3.line()

@@ -182,6 +182,19 @@ export const tide = {
     }
 }
 
+export const maxWave = {
+    height: 0,
+    length: 0,
+
+    get getHeight() {
+        return this.height;
+    },
+    set setHeight(val) {
+        this.height = (1 / canvasProp.getRealHeight) * val;
+        this.length = tide.getLength
+    }
+}
+
 export const preventions = {
     budget: 10000,
     bought: [],
@@ -213,7 +226,8 @@ export const seaBees = {
     name: "seabees",
     height: 0.08,
     width: 0.05,
-    length: 0,
+    length: 0,          // x-position of sea-bees
+    waveDecrease: 0.3,
 
     get getName() {
         return this.name;
@@ -235,5 +249,8 @@ export const seaBees = {
     },
     set setLength(val) {
         this.length = val;
+    },
+    get getWaveDecrease() {
+        return this.waveDecrease;
     }
 }

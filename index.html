@@ -62,15 +62,21 @@
                     <label for="seaRiseSlider">Sea Rise</label>
                     <input type="range" min="1" max="5" value="1" class="seaRiseSlider" id="seaRiseSlider">
                 </div>
-                <form>
-                    <p>Tide Selection</p>
-                    <input type="radio" id="lowTide" name="tideSelection" value="1">
-                    <label for="lowTide">Low</label><br>
-                    <input type="radio" id="averageTide" name="tideSelection" value="2" checked="checked">
-                    <label for="averageTide">Average</label><br>
-                    <input type="radio" id="highTide" name="tideSelection" value="3">
-                    <label for="highTide">High</label>
-                </form> 
+                <div>
+                    <label for="maxWaveHeightSlider">Max Wave Height</label>
+                    <input type="range" min="6" max="9" value="6" class="maxWaveHeightSlider" id="maxWaveHeightSlider">
+                </div>
+                <div>
+                    <form>
+                        <p>Tide Selection</p>
+                        <input type="radio" id="lowTide" name="tideSelection" value="1">
+                        <label for="lowTide">Low</label><br>
+                        <input type="radio" id="averageTide" name="tideSelection" value="2" checked="checked">
+                        <label for="averageTide">Average</label><br>
+                        <input type="radio" id="highTide" name="tideSelection" value="3">
+                        <label for="highTide">High</label>
+                    </form>
+                </div>
             </div>
             <div class="col-8">
                 <div class ="canvas" id="canvas"></div>
