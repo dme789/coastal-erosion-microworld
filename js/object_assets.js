@@ -74,7 +74,7 @@ export const beach = {
 export const dune = {
     height: 0.15,
     bankLength: 0.01,
-    width: 1- beach.getBeachWidth,
+    width: 1 - beach.getBeachWidth,
     slope: 15,
 
     get getDuneHeight() {
@@ -252,5 +252,51 @@ export const seaBees = {
     },
     get getWaveDecrease() {
         return this.waveDecrease;
+    }
+}
+
+export const housesArr = {
+    houses: [],
+
+    get getHouses() {
+        return this.houses;
+    }
+}
+
+export const house = {
+    height: 0,
+    width: 0,
+    length: 0,
+    xPos: 0,
+
+    get getHeight() {
+        return this.height;
+    },
+    set setHeight(val) {
+        this.height = val;
+    },
+    get getWidth() {
+        return this.width;
+    },
+    set setWidth(val) {
+        this.width = val;
+    },
+    get getLength() {
+        return this.length;
+    },
+    set setLength(val) {
+        this.length = val;
+    },
+    get getXPos() {
+        return this.xPos;
+    },
+    set setXPos(val) {
+        this.xPos = val
+    },
+    createNew: function(h, w, l, x) {
+        this.height = h;
+        this.width = w;
+        this.length = l;
+        this.xPos = x;
     }
 }

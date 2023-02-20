@@ -1,4 +1,4 @@
-import {canvasProp, beach, dune, sea, tide, maxWave, preventions, seaBees} from './object_assets.js';
+import {canvasProp, beach, dune, sea, tide, maxWave, preventions, seaBees, housesArr, house} from './object_assets.js';
 
 // Setups up initial canvas as svg to draw on.
 // Then calls drawSideCanvas to draw the side view initially
@@ -6,6 +6,13 @@ var canvas = d3.select("#canvas")
     .append("svg")
     .attr("width", canvasProp.getCanvasWidth)
     .attr("height", canvasProp.getCanvasHeight);
+
+// Creating predefined houses
+for (var i = 0; i < 10; i++) {
+    const houseT = Object.create(house)
+    houseT.createNew(0.16, 0.05, 0.08, (i * 0.1))
+    housesArr.getHouses.push(houseT)
+}
 
 drawSideCanvas(canvas)
 document.getElementById("currYear").innerHTML = 2023;
@@ -38,6 +45,7 @@ function drawAerialCanvas(canvas) {
     var tideOption = getSelectedTide();
     if (tideOption != 1) {canvas = drawAerialTide(canvas, tideOption)}
     canvas = drawAerialPreventions(canvas)
+    canvas = drawAerialHouses(canvas)
     return canvas
 }
 
@@ -480,13 +488,6 @@ function drawAerialDune(canvas) {
         .attr("stroke", "black")
         .attr("stroke-width", 0.5)
         .attr("fill", "#FAFAD2");
-
-    canvas.append("text")
-        .attr("x", canvasProp.getCanvasWidth * 0.475)
-        .attr("y", canvasProp.getCanvasHeight * 0.1)
-        .attr("text-anchor", "middle")
-        .style("font-size", "24px")
-        .text("Dune");
     
     return canvas
 }
@@ -579,4 +580,29 @@ function drawAerialSeaBee(canvas, seeB) {
     }
 
     return canvas;
+}
+
+function drawAerialHouses(canvas) {
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+    for (var i = 0; i < housesArr.getHouses.length; i++) {
+        const tempHouse = housesArr.getHouses[i]
+        var line = [
+            {"x": cW * tempHouse.getXPos, "y": cH * (dune.getDuneWidth - 0.05)},
+            {"x": cW * tempHouse.getXPos, "y": cH * (dune.getDuneWidth - 0.05 - tempHouse.getWidth)},
+            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (dune.getDuneWidth - 0.05 - tempHouse.getWidth)},
+            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (dune.getDuneWidth - 0.05)},
+            {"x": cW * tempHouse.getXPos, "y": cH * (dune.getDuneWidth - 0.05)}
+        ];
+        console.log(line)
+    
+        var lineFunction = d3.line()
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; });
+        
+        canvas.append("path")
+            .attr("d", lineFunction(line))
+            .attr("fill", "#946b4b")
+    }
+    return canvas
 }
