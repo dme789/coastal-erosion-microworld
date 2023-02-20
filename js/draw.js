@@ -24,6 +24,7 @@ function drawSideCanvas(canvas) {
     canvas = drawSidePreventions(canvas)
     canvas = drawSideBeach(canvas)
     canvas = drawSideDune(canvas)
+    canvas = drawSideHouse(canvas)
     return canvas
 }
 
@@ -99,7 +100,7 @@ function skipYears() {
 function incrementYear() {
     var seaRise = document.getElementById("seaRiseSlider").value;
     canvasProp.incrementYear()
-    sea.increaseSeaRise(seaRise / 500);    // meters to cm
+    sea.increaseSeaRise(seaRise / 100);    // meters to cm
     preventions.increaseBudget(1000);
     document.getElementById("timeSlider").value = canvasProp.getYear;
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
@@ -403,6 +404,23 @@ function drawSideSeaBee(sbee, canvas) {
         .attr("stroke", "black")
         .attr("stroke-width", 0.5)
         .attr("fill", "#808080");
+
+    return canvas;
+}
+
+function drawSideHouse(canvas) {
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+
+    var xPos = 101.5;
+    var yPos = 80;
+    
+    canvas.append('image')
+        .attr("xlink:href", "imgs/sideHouse.png")
+        .attr('width', xPos)
+        .attr('height', yPos)
+        .attr("x", cW * (1 - dune.getDuneWidth + 0.05))
+        .attr("y", cH * (1 - beach.getBeachMaxHeight - dune.getDuneHeight - 0.06));
 
     return canvas;
 }
