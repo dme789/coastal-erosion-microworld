@@ -149,9 +149,9 @@ function purchasePrevention() {
             document.getElementById("budgetRem").innerHTML = preventions.getBudget;
             let canvasElem = document.querySelector('#canvas')
             canvasElem.addEventListener("click", function handler(e) {
-                var xClick = getMousePosCanvas(canvasElem, e)
+                var clickPos = getMousePosCanvas(canvasElem, e)
                 const seaBee = Object.create(seaBees)
-                seaBee.setLength = xClick + (seaBee.getWidth / 2);
+                seaBee.setLength = clickPos + (seaBee.getWidth / 2);
                 preventions.addNew(seaBee)
                 if (canvasProp.getState == 0) {
                     canvas = drawSidePreventions(canvas)
@@ -183,7 +183,8 @@ function getMousePosCanvas(canvas, event) {
     let x = (event.clientX - rect.left) / canvasProp.getCanvasWidth;
     let y = (event.clientY - rect.top) / canvasProp.getCanvasHeight;
     console.log(x)
-    return x;
+    if (canvasProp.getState == 0) {return x}
+    else {return (1 - y)}
 }
 
 // *************************** Side View Draw Functions **********************************
@@ -557,6 +558,7 @@ function drawAerialTide(canvas, tideOption) {
 function drawAerialPreventions(canvas) {
     for(var i = 0; i < preventions.bought.length; i++) {
         var prev = preventions.bought[i]
+        console.log("Here!")
         if (prev.name == "seabees") {
             canvas = drawAerialSeaBee(canvas, prev)
         } else {
@@ -566,9 +568,13 @@ function drawAerialPreventions(canvas) {
     return canvas;
 }
 
+// cW * (sbee.getLength - sbee.getWidth)
+
 function drawAerialSeaBee(canvas, seeB) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
+
+    console.log(seeB.getLength)
 
     for (var i = 0; i < cW; i = i + 25) {
         canvas.append('image')
@@ -576,7 +582,7 @@ function drawAerialSeaBee(canvas, seeB) {
             .attr('width', 21)
             .attr('height', 21)
             .attr("x", 0 + i)
-            .attr("y", cH * (1 - beach.getBeachWidth + 0.1 - seeB.getWidth));
+            .attr("y", cH * (1 - seeB.getLength));
     }
 
     return canvas;
@@ -594,7 +600,6 @@ function drawAerialHouses(canvas) {
             {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (dune.getDuneWidth - 0.05)},
             {"x": cW * tempHouse.getXPos, "y": cH * (dune.getDuneWidth - 0.05)}
         ];
-        console.log(line)
     
         var lineFunction = d3.line()
             .x(function(d) { return d.x; })
