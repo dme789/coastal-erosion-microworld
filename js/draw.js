@@ -153,6 +153,7 @@ function purchasePrevention() {
                 const seaBee = Object.create(seaBees)
                 seaBee.setLength = clickPos + (seaBee.getWidth / 2);
                 preventions.addNew(seaBee)
+                sortPreventions()
                 if (canvasProp.getState == 0) {
                     canvas = drawSidePreventions(canvas)
                     drawSideCanvas(canvas)
@@ -164,6 +165,18 @@ function purchasePrevention() {
             window.alert("You do not have the budget available to make this purchase");
         }
     } else {window.alert("You need to select a prevention to buy!");}
+}
+
+function sortPreventions() {
+    if (preventions.bought.length > 1) {
+        preventions.bought.sort(compare)
+    }
+}
+
+function compare(a, b) {
+    if (a.getLength < b.getLength) {return -1;}
+    if (a.getLength > b.getLength) {return 1;}
+    return 0;
 }
 
 // Gets the prevention option selected
@@ -182,7 +195,6 @@ function getMousePosCanvas(canvas, event) {
     let rect = canvas.getBoundingClientRect();
     let x = (event.clientX - rect.left) / canvasProp.getCanvasWidth;
     let y = (event.clientY - rect.top) / canvasProp.getCanvasHeight;
-    console.log(x)
     if (canvasProp.getState == 0) {return x}
     else {return (1 - y)}
 }
@@ -343,12 +355,22 @@ function drawSideMaxWave(canvas, tideOption) {
     
     canvas = drawSideWave(canvas, tH, cW, cH, 0, maxUnbroken, waveHeight)
 
+    var start = 0;
+    var end = 0;
     //After preventions
     for (var i = 0; i < tempPs.length; i++) {
         const prev = tempPs[i]
-        if (prev.name == "seabees") {
-            canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), beach.getBeachWidth, waveHeight * prev.getWaveDecrease)
+        if (i+1 < tempPs.length){
+            end = tempPs[i+1].getLength - (tempPs[i+1].getWidth / 2)
+        } else {
+            end = beach.getBeachWidth;
         }
+        if (prev.name == "seabees") {
+            waveHeight = waveHeight * prev.getWaveDecrease
+            console.log()
+            canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight)
+        }
+
     }
     
     return canvas
@@ -567,8 +589,6 @@ function drawAerialPreventions(canvas) {
     }
     return canvas;
 }
-
-// cW * (sbee.getLength - sbee.getWidth)
 
 function drawAerialSeaBee(canvas, seeB) {
     const cH = canvasProp.getCanvasHeight

@@ -255,6 +255,40 @@ export const seaBees = {
     }
 }
 
+export const seaWall = {
+    name: "seawall",
+    height: 0,
+    width: 0,
+    length: 0,
+
+    get getName() {
+        return this.name;
+    },
+    get getHeight() {
+        return this.height;
+    },
+    set setHeight(val) {
+        this.height = val;
+    },
+    get getWidth() {
+        return this.width;
+    },
+    set setWidth(val) {
+        this.width = val;
+    },
+    get getLength() {
+        return this.length;
+    },
+    set setLength(val) {
+        this.length = val;
+    },
+    createNew: function(h, w, l) {
+        this.height = h;
+        this.width = w;
+        this.length = l;
+    }
+}
+
 export const housesArr = {
     houses: [],
 
