@@ -1,4 +1,4 @@
-import {canvasProp, beach, dune, sea, tide, maxWave, preventions, seaBees, housesArr, house} from './object_assets.js';
+import {canvasProp, beach, dune, sea, tide, maxWave, preventions, seaBees, housesArr, house, seaWalls} from './object_assets.js';
 
 // Setups up initial canvas as svg to draw on.
 // Then calls drawSideCanvas to draw the side view initially
@@ -23,11 +23,11 @@ document.getElementById("budgetRem").innerHTML = preventions.getBudget;
 // Draws the side view of the canvas
 function drawSideCanvas(canvas) {
     console.log("Drawing the Side")
+    setSelectedTide();
     canvas = drawBackground(canvas)
     canvas = drawSideSea(canvas)
-    var tideOption = getSelectedTide();
-    canvas = drawSideMaxWave(canvas, tideOption)
-    canvas = drawSideTide(canvas, tideOption);
+    canvas = drawSideMaxWave(canvas)
+    canvas = drawSideTide(canvas);
     canvas = drawSidePreventions(canvas)
     canvas = drawSideBeach(canvas)
     canvas = drawSideDune(canvas)
@@ -38,12 +38,13 @@ function drawSideCanvas(canvas) {
 // Draws the side view of the canvas
 function drawAerialCanvas(canvas) {
     console.log("Drawing the aerial")
+    setSelectedTide();
     canvas = drawBackground(canvas)
     canvas = drawAerialBeach(canvas)
     canvas = drawAerialDune(canvas)
     canvas = drawAerialSea(canvas)
-    var tideOption = getSelectedTide();
-    if (tideOption != 1) {canvas = drawAerialTide(canvas, tideOption)}
+    // if (tideOption != 1) {canvas = drawAerialTide(canvas, tideOption)}
+    canvas = drawAerialTide(canvas)
     canvas = drawAerialPreventions(canvas)
     canvas = drawAerialHouses(canvas)
     return canvas
@@ -127,15 +128,18 @@ tideOptions.forEach(function(option) {
 });
 
 // Gets the tide option selected
-function getSelectedTide() {
+function setSelectedTide() {
     var options = document.getElementsByName('tideSelection')
     for (var i = 0; i < options.length; i++) {
         if (options[i].checked) {
             tide.calculateTideLength(options[i].value);
-            return options[i].value;
+            var tH = -1;
+            if (options[i].value == 1) {tH = tide.getLow}
+            else if (options[i].value == 2) {tH = tide.getAverage()}
+            else {tH = tide.getHigh}
+            tide.setHeight = tH;
         }
     }
-    return null
 }
 
 const preventionPurchase = document.getElementById('confirmedPurchase');
@@ -150,10 +154,17 @@ function purchasePrevention() {
             let canvasElem = document.querySelector('#canvas')
             canvasElem.addEventListener("click", function handler(e) {
                 var clickPos = getMousePosCanvas(canvasElem, e)
-                const seaBee = Object.create(seaBees)
-                seaBee.setLength = clickPos + (seaBee.getWidth / 2);
-                seaBee.calcYPos();
-                preventions.addNew(seaBee)
+                if (prevention.id == "seabees") {
+                    const seaBee = Object.create(seaBees)
+                    seaBee.setLength = clickPos + (seaBee.getWidth / 2);
+                    seaBee.calcYPos();
+                    preventions.addNew(seaBee)
+                } else if (prevention.id == "seawall") {
+                    const seaWall = Object.create(seaWalls)
+                    seaWall.setLength = clickPos + (seaWall.getWidth / 2);
+                    seaWall.calcYPos();
+                    preventions.addNew(seaWall)
+                }
                 sortPreventions()
                 if (canvasProp.getState == 0) {
                     canvas = drawSidePreventions(canvas)
@@ -298,11 +309,8 @@ function drawSideSea(canvas) {
     return canvas
 }
 
-function drawSideTide(canvas, tideOption) {
-    var tH = -1;
-    if (tideOption == 1) {tH = tide.getLow}
-    else if (tideOption == 2) {tH = tide.getAverage()}
-    else {tH = tide.getHigh}
+function drawSideTide(canvas) {
+    var tH = tide.getHeight
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
     var line = [
@@ -321,7 +329,7 @@ function drawSideTide(canvas, tideOption) {
         .attr("d", lineFunction(line))
         .attr("fill", "#87CEFA")
     
-    if (tideOption != 1) {
+    if (tH != 0) {
         canvas.append("text")
             .attr("x", 50)
             .attr("y", (cH * (beach.getBeachMinHeight - sea.getHeight)) - 5)
@@ -334,12 +342,9 @@ function drawSideTide(canvas, tideOption) {
     return canvas
 }
 
-function drawSideMaxWave(canvas, tideOption) {
+function drawSideMaxWave(canvas) {
     var waveHeight = maxWave.getHeight / 4  // factored down by 75%
-    var tH = -1;
-    if (tideOption == 1) {tH = tide.getLow}
-    else if (tideOption == 2) {tH = tide.getAverage()}
-    else {tH = tide.getHigh}
+    var tH = tide.getHeight
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
     
@@ -411,6 +416,8 @@ function drawSidePreventions(canvas) {
         var prev = preventions.bought[i]
         if (prev.name == "seabees") {
             canvas = drawSideSeaBee(prev, canvas)
+        } else if (prev.name == "seawall") {
+            canvas = drawSideSeaWall(prev, canvas)
         } else {
             console.log("do something")
         }
@@ -421,13 +428,6 @@ function drawSidePreventions(canvas) {
 function drawSideSeaBee(sbee, canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
-    // var line = [
-    //     {"x": cW * sbee.getLength, "y": cH * (beach.getBeachMaxHeight + 0.05)},
-    //     {"x": cW * sbee.getLength, "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
-    //     {"x": cW * (sbee.getLength - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
-    //     {"x": cW * (sbee.getLength - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05)},
-    //     {"x": cW * sbee.getLength, "y": cH * (beach.getBeachMaxHeight + 0.05)}
-    // ];
 
     var line = [
         {"x": cW * sbee.getLength, "y": cH * sbee.getYPos},
@@ -446,6 +446,31 @@ function drawSideSeaBee(sbee, canvas) {
         .attr("stroke", "black")
         .attr("stroke-width", 0.5)
         .attr("fill", "#808080");
+
+    return canvas;
+}
+
+function drawSideSeaWall(seawall, canvas) {
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+
+    var line = [
+        {"x": cW * seawall.getLength, "y": cH * seawall.getYPos},
+        {"x": cW * seawall.getLength, "y": cH * (seawall.getYPos - seawall.getHeight)},
+        {"x": cW * (seawall.getLength - seawall.getWidth), "y": cH * (seawall.getYPos - seawall.getHeight)},
+        {"x": cW * (seawall.getLength - seawall.getWidth), "y": cH * seawall.getYPos},
+        {"x": cW * seawall.getLength, "y": cH * seawall.getYPos}
+    ];
+    
+    var lineFunction = d3.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; });
+    
+    canvas.append("path")
+        .attr("d", lineFunction(line))
+        .attr("stroke", "black")
+        .attr("stroke-width", 0.5)
+        .attr("fill", "#595959");
 
     return canvas;
 }
@@ -557,7 +582,7 @@ function drawAerialSea(canvas) {
     return canvas
 }
 
-function drawAerialTide(canvas, tideOption) {
+function drawAerialTide(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
     var line = [
@@ -576,7 +601,7 @@ function drawAerialTide(canvas, tideOption) {
         .attr("d", lineFunction(line))
         .attr("fill", "#87CEFA")
     
-    if (tideOption != 1) {
+    if (tide.getHeight != 0) {
         canvas.append("text")
             .attr("x", cW * 0.475)
             .attr("y", cH * (1 - sea.getLength) - 10)
@@ -591,9 +616,16 @@ function drawAerialTide(canvas, tideOption) {
 function drawAerialPreventions(canvas) {
     for(var i = 0; i < preventions.bought.length; i++) {
         var prev = preventions.bought[i]
-        console.log("Here!")
         if (prev.name == "seabees") {
-            canvas = drawAerialSeaBee(canvas, prev)
+            canvas = drawAerialSeaBee(prev, canvas)
+        } else if (prev.name == "seawall") {
+            var seaH =  beach.getBeachMinHeight - sea.getHeight - tide.getHeight
+            if (prev.getYPos - prev.getHeight <= seaH) {
+                console.log("here bro")
+                canvas = drawAerialSeaWall(prev, canvas)
+            } else {
+                console.log("IDIOT")
+            }
         } else {
             console.log("do something")
         }
@@ -601,11 +633,9 @@ function drawAerialPreventions(canvas) {
     return canvas;
 }
 
-function drawAerialSeaBee(canvas, seeB) {
+function drawAerialSeaBee(seeB, canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
-
-    console.log(seeB.getLength)
 
     for (var i = 0; i < cW; i = i + 25) {
         canvas.append('image')
@@ -617,6 +647,30 @@ function drawAerialSeaBee(canvas, seeB) {
     }
 
     return canvas;
+}
+
+function drawAerialSeaWall (seaWall, canvas) {
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+    var line = [
+        {"x": 0, "y": cH * (1 - seaWall.getLength + (seaWall.getWidth / 2))},
+        {"x": 0, "y": cH * (1 - seaWall.getLength - (seaWall.getWidth / 2))},
+        {"x": cW, "y": cH * (1 - seaWall.getLength - (seaWall.getWidth / 2))},
+        {"x": cW, "y": cH * (1 - seaWall.getLength + (seaWall.getWidth / 2))},
+        {"x": 0, "y": cH * (1 - seaWall.getLength + (seaWall.getWidth / 2))}
+    ];
+    
+    var lineFunction = d3.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; });
+    
+    canvas.append("path")
+        .attr("d", lineFunction(line))
+        .attr("stroke", "black")
+        .attr("stroke-width", 0.5)
+        .attr("fill", "#595959");
+    
+    return canvas
 }
 
 function drawAerialHouses(canvas) {

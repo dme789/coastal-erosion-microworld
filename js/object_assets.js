@@ -142,6 +142,7 @@ export const tide = {
     low: 0,
     high: 0.1,
     length: 0,
+    height: -1,
 
     get getLow() {
         return this.low;
@@ -160,6 +161,12 @@ export const tide = {
     },
     set setLength(val) {
         this.length = val;
+    },
+    get getHeight() {
+        return this.height;
+    },
+    set setHeight(val) {
+        this.height = val;
     },
     getAverage: function() {
         return ((this.high - this.low) / 2) + this.low
@@ -266,11 +273,12 @@ export const seaBees = {
     }
 }
 
-export const seaWall = {
+export const seaWalls = {
     name: "seawall",
-    height: 0,
-    width: 0,
+    height: 0.08,
+    width: 0.025,
     length: 0,
+    yPos: 0,
 
     get getName() {
         return this.name;
@@ -292,6 +300,16 @@ export const seaWall = {
     },
     set setLength(val) {
         this.length = val;
+    },
+    get getYPos() {
+        return this.yPos;
+    },
+    set setYPos(val) {
+        this.yPos = val;
+    },
+    calcYPos: function() {
+        var rise = (this.length - (this.width/2) - 0.005) * beach.getBeachSlope;
+        this.yPos = beach.getBeachMinHeight - rise;
     },
     createNew: function(h, w, l) {
         this.height = h;
