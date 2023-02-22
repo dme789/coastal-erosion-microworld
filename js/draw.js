@@ -26,8 +26,8 @@ function drawSideCanvas(canvas) {
     canvas = drawBackground(canvas)
     canvas = drawSideSea(canvas)
     var tideOption = getSelectedTide();
-    canvas = drawSideTide(canvas, tideOption);
     canvas = drawSideMaxWave(canvas, tideOption)
+    canvas = drawSideTide(canvas, tideOption);
     canvas = drawSidePreventions(canvas)
     canvas = drawSideBeach(canvas)
     canvas = drawSideDune(canvas)
@@ -366,8 +366,11 @@ function drawSideMaxWave(canvas, tideOption) {
             end = beach.getBeachWidth;
         }
         if (prev.name == "seabees") {
-            waveHeight = waveHeight * prev.getWaveDecrease
-            console.log()
+            // cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)
+            var seaH =  cH * (beach.getBeachMinHeight - sea.getHeight - tH)
+            if (cH * (beach.getBeachMaxHeight + 0.05 - prev.getHeight) <= seaH) {
+                waveHeight = waveHeight * prev.getWaveDecrease
+            }
             canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight)
         }
 
