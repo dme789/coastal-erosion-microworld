@@ -152,6 +152,7 @@ function purchasePrevention() {
                 var clickPos = getMousePosCanvas(canvasElem, e)
                 const seaBee = Object.create(seaBees)
                 seaBee.setLength = clickPos + (seaBee.getWidth / 2);
+                seaBee.calcYPos();
                 preventions.addNew(seaBee)
                 sortPreventions()
                 if (canvasProp.getState == 0) {
@@ -366,9 +367,8 @@ function drawSideMaxWave(canvas, tideOption) {
             end = beach.getBeachWidth;
         }
         if (prev.name == "seabees") {
-            // cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)
             var seaH =  cH * (beach.getBeachMinHeight - sea.getHeight - tH)
-            if (cH * (beach.getBeachMaxHeight + 0.05 - prev.getHeight) <= seaH) {
+            if (cH * (prev.getYPos - prev.getHeight) <= seaH) {
                 waveHeight = waveHeight * prev.getWaveDecrease
             }
             canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight)
@@ -421,12 +421,20 @@ function drawSidePreventions(canvas) {
 function drawSideSeaBee(sbee, canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
+    // var line = [
+    //     {"x": cW * sbee.getLength, "y": cH * (beach.getBeachMaxHeight + 0.05)},
+    //     {"x": cW * sbee.getLength, "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
+    //     {"x": cW * (sbee.getLength - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
+    //     {"x": cW * (sbee.getLength - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05)},
+    //     {"x": cW * sbee.getLength, "y": cH * (beach.getBeachMaxHeight + 0.05)}
+    // ];
+
     var line = [
-        {"x": cW * sbee.getLength, "y": cH * (beach.getBeachMaxHeight + 0.05)},
-        {"x": cW * sbee.getLength, "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
-        {"x": cW * (sbee.getLength - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05 - sbee.getHeight)},
-        {"x": cW * (sbee.getLength - sbee.getWidth), "y": cH * (beach.getBeachMaxHeight + 0.05)},
-        {"x": cW * sbee.getLength, "y": cH * (beach.getBeachMaxHeight + 0.05)}
+        {"x": cW * sbee.getLength, "y": cH * sbee.getYPos},
+        {"x": cW * sbee.getLength, "y": cH * (sbee.getYPos - sbee.getHeight)},
+        {"x": cW * (sbee.getLength - sbee.getWidth), "y": cH * (sbee.getYPos - sbee.getHeight)},
+        {"x": cW * (sbee.getLength - sbee.getWidth), "y": cH * sbee.getYPos},
+        {"x": cW * sbee.getLength, "y": cH * sbee.getYPos}
     ];
     
     var lineFunction = d3.line()

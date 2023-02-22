@@ -228,6 +228,7 @@ export const seaBees = {
     width: 0.05,
     length: 0,          // x-position of sea-bees
     waveDecrease: 0.3,
+    yPos: 0,
 
     get getName() {
         return this.name;
@@ -252,6 +253,16 @@ export const seaBees = {
     },
     get getWaveDecrease() {
         return this.waveDecrease;
+    },
+    get getYPos() {
+        return this.yPos;
+    },
+    set setYPos(val) {
+        this.yPos = val;
+    },
+    calcYPos: function() {
+        var rise = (this.length - (this.width/2) - 0.005) * beach.getBeachSlope;
+        this.yPos = beach.getBeachMinHeight - rise;
     }
 }
 
