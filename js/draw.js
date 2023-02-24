@@ -18,6 +18,7 @@ drawSideCanvas(canvas)
 document.getElementById("currYear").innerHTML = 2023;
 document.getElementById("budgetRem").innerHTML = preventions.getBudget;
 
+
 // *************************** Main Draw Functions **********************************
 
 // Draws the side view of the canvas
@@ -62,6 +63,7 @@ function drawBackground(canvas) {
 }
 
 // *************************** User Input Change Functions **********************************
+
 const sideViewOption = document.getElementById('sideViewButton');
 sideViewOption.addEventListener('click', reDrawSideCanvas);
 
@@ -96,27 +98,6 @@ waveSlider.on("input", function() {
 
 const playForwardOption = document.getElementById('playButton');
 playForwardOption.addEventListener('click', skipYears);
-
-
-function skipYears() {
-    for (let i = 0; i < 5; i++) {       // skips 5 years
-        if (canvasProp.getYear < 50) {
-            incrementYear()
-        }
-    }
-}
-
-function incrementYear() {
-    var seaRise = document.getElementById("seaRiseSlider").value;
-    canvasProp.incrementYear()
-    sea.increaseSeaRise(seaRise / 100);    // meters to cm
-    preventions.increaseBudget(1000);
-    document.getElementById("timeSlider").value = canvasProp.getYear;
-    if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
-    else {drawAerialCanvas(canvas)}
-    document.getElementById("currYear").innerHTML = (2023 + canvasProp.getYear);
-    document.getElementById("budgetRem").innerHTML = preventions.getBudget;
-}
 
 // Detects a change in the tide option selected
 var tideOptions = document.getElementsByName('tideSelection');
@@ -179,6 +160,38 @@ function purchasePrevention() {
     } else {window.alert("You need to select a prevention to buy!");}
 }
 
+// Gets position of mouse click from user as % of canvas
+function getMousePosCanvas(canvas, event) {
+    let rect = canvas.getBoundingClientRect();
+    let x = (event.clientX - rect.left) / canvasProp.getCanvasWidth;
+    let y = (event.clientY - rect.top) / canvasProp.getCanvasHeight;
+    if (canvasProp.getState == 0) {return x}
+    else {return (1 - y)}
+}
+
+
+// *************************** Main Draw Functions **********************************
+
+function skipYears() {
+    for (let i = 0; i < 5; i++) {       // skips 5 years
+        if (canvasProp.getYear < 50) {
+            incrementYear()
+        }
+    }
+}
+
+function incrementYear() {
+    var seaRise = document.getElementById("seaRiseSlider").value;
+    canvasProp.incrementYear()
+    sea.increaseSeaRise(seaRise / 100);    // meters to cm
+    preventions.increaseBudget(1000);
+    document.getElementById("timeSlider").value = canvasProp.getYear;
+    if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
+    else {drawAerialCanvas(canvas)}
+    document.getElementById("currYear").innerHTML = (2023 + canvasProp.getYear);
+    document.getElementById("budgetRem").innerHTML = preventions.getBudget;
+}
+
 function sortPreventions() {
     if (preventions.bought.length > 1) {
         preventions.bought.sort(compare)
@@ -202,14 +215,21 @@ function getSelectedPrevention() {
     return null
 }
 
-// Gets position of mouse click from user as % of canvas
-function getMousePosCanvas(canvas, event) {
-    let rect = canvas.getBoundingClientRect();
-    let x = (event.clientX - rect.left) / canvasProp.getCanvasWidth;
-    let y = (event.clientY - rect.top) / canvasProp.getCanvasHeight;
-    if (canvasProp.getState == 0) {return x}
-    else {return (1 - y)}
+function getSeaWallWaterLevel(length, heightToCheck) {
+    for(var i = 0; i < preventions.bought.length; i++) {
+        var prev = preventions.bought[i]
+        if (prev.name == "seawall") {
+            if ((prev.getYPos - prev.getHeight) <= heightToCheck) {
+                if (prev.getLength < length) {
+                    return prev.getLength;
+                } 
+                break;
+            }
+        } 
+    }
+    return length;
 }
+
 
 // *************************** Side View Draw Functions **********************************
 
@@ -281,11 +301,14 @@ function drawSideDune(canvas) {
 function drawSideSea(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
+
+    var seaLength = getSeaWallWaterLevel(sea.getLength, (beach.getBeachMinHeight - sea.getHeight))
+    
     var line = [
         {"x": 0, "y": cH},
         {"x": 0, "y": cH * (beach.getBeachMinHeight - sea.getHeight)},
-        {"x": cW * sea.getLength, "y": cH * (beach.getBeachMinHeight - sea.getHeight)},
-        {"x": cW * sea.getLength, "y": cH},
+        {"x": cW * seaLength, "y": cH * (beach.getBeachMinHeight - sea.getHeight)},
+        {"x": cW * seaLength, "y": cH},
         {"x": 0, "y": cH},
     ];
 
@@ -313,11 +336,14 @@ function drawSideTide(canvas) {
     var tH = tide.getHeight
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
+
+    var tideLength = getSeaWallWaterLevel(tide.getLength, (beach.getBeachMinHeight - sea.getHeight - tH))
+
     var line = [
         {"x": 0, "y": cH * (beach.getBeachMinHeight - sea.getHeight)},
         {"x": 0, "y": cH * (beach.getBeachMinHeight - sea.getHeight - tH)},
-        {"x": cW * tide.getLength, "y": cH * (beach.getBeachMinHeight - sea.getHeight - tH)},
-        {"x": cW * tide.getLength, "y": cH * (beach.getBeachMinHeight - sea.getHeight)},
+        {"x": cW * tideLength, "y": cH * (beach.getBeachMinHeight - sea.getHeight - tH)},
+        {"x": cW * tideLength, "y": cH * (beach.getBeachMinHeight - sea.getHeight)},
         {"x": 0, "y": cH * (beach.getBeachMinHeight - sea.getHeight)}
     ];
 
@@ -554,10 +580,13 @@ function drawAerialDune(canvas) {
 function drawAerialSea(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
+
+    var seaLength = getSeaWallWaterLevel(sea.getLength, (beach.getBeachMinHeight - sea.getHeight))
+
     var line = [
         {"x": 0, "y": cH},
-        {"x": 0, "y": cH * (1 - sea.getLength)},
-        {"x": cW, "y": cH * (1 - sea.getLength)},
+        {"x": 0, "y": cH * (1 - seaLength)},
+        {"x": cW, "y": cH * (1 - seaLength)},
         {"x": cW, "y": cH},
         {"x": 0, "y": cH},
     ];
@@ -585,13 +614,17 @@ function drawAerialSea(canvas) {
 function drawAerialTide(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
+
+    var tideLength = getSeaWallWaterLevel(tide.getLength, (beach.getBeachMinHeight - sea.getHeight - tide.getHeight))
+
     var line = [
         {"x": 0, "y": cH * (1 - sea.getLength)},
-        {"x": 0, "y": cH * (1 - tide.getLength)},
-        {"x": cW, "y": cH * (1 - tide.getLength)},
+        {"x": 0, "y": cH * (1 - tideLength)},
+        {"x": cW, "y": cH * (1 - tideLength)},
         {"x": cW, "y": cH * (1 - sea.getLength)},
         {"x": 0, "y": cH * (1 - sea.getLength)},
     ];
+    console.log(line)
 
     var lineFunction = d3.line()
         .x(function(d) { return d.x; })
