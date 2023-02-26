@@ -23,8 +23,9 @@ document.getElementById("budgetRem").innerHTML = preventions.getBudget;
 
 // Draws the side view of the canvas
 function drawSideCanvas(canvas) {
+    canvas.selectAll("*").remove();
     console.log("Drawing the Side")
-    setSelectedTide();
+    var tideOption = setSelectedTide();
     canvas = drawBackground(canvas)
     canvas = drawSideSea(canvas)
     canvas = drawSideMaxWave(canvas)
@@ -38,14 +39,14 @@ function drawSideCanvas(canvas) {
 
 // Draws the side view of the canvas
 function drawAerialCanvas(canvas) {
+    canvas.selectAll("*").remove();
     console.log("Drawing the aerial")
-    setSelectedTide();
+    var tideOption = setSelectedTide();
     canvas = drawBackground(canvas)
     canvas = drawAerialBeach(canvas)
     canvas = drawAerialDune(canvas)
     canvas = drawAerialSea(canvas)
-    // if (tideOption != 1) {canvas = drawAerialTide(canvas, tideOption)}
-    canvas = drawAerialTide(canvas)
+    if (tideOption != 1) { canvas = drawAerialTide(canvas);}
     canvas = drawAerialPreventions(canvas)
     canvas = drawAerialHouses(canvas)
     return canvas
@@ -119,6 +120,7 @@ function setSelectedTide() {
             else if (options[i].value == 2) {tH = tide.getAverage()}
             else {tH = tide.getHigh}
             tide.setHeight = tH;
+            return options[i].value;
         }
     }
 }
@@ -302,7 +304,7 @@ function drawSideSea(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
 
-    var seaLength = getSeaWallWaterLevel(sea.getLength, (beach.getBeachMinHeight - sea.getHeight))
+    var seaLength = getSeaWallWaterLevel(sea.getLength, (beach.getBeachMinHeight - sea.getHeight - tide.getHeight))
     
     var line = [
         {"x": 0, "y": cH},
@@ -581,7 +583,7 @@ function drawAerialSea(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
 
-    var seaLength = getSeaWallWaterLevel(sea.getLength, (beach.getBeachMinHeight - sea.getHeight))
+    var seaLength = getSeaWallWaterLevel(sea.getLength, (beach.getBeachMinHeight - sea.getHeight - tide.getHeight))
 
     var line = [
         {"x": 0, "y": cH},
@@ -617,30 +619,32 @@ function drawAerialTide(canvas) {
 
     var tideLength = getSeaWallWaterLevel(tide.getLength, (beach.getBeachMinHeight - sea.getHeight - tide.getHeight))
 
-    var line = [
-        {"x": 0, "y": cH * (1 - sea.getLength)},
-        {"x": 0, "y": cH * (1 - tideLength)},
-        {"x": cW, "y": cH * (1 - tideLength)},
-        {"x": cW, "y": cH * (1 - sea.getLength)},
-        {"x": 0, "y": cH * (1 - sea.getLength)},
-    ];
-    console.log(line)
-
-    var lineFunction = d3.line()
-        .x(function(d) { return d.x; })
-        .y(function(d) { return d.y; });
+    if (tideLength > sea.getLength) {
+        var line = [
+            {"x": 0, "y": cH * (1 - sea.getLength)},
+            {"x": 0, "y": cH * (1 - tideLength)},
+            {"x": cW, "y": cH * (1 - tideLength)},
+            {"x": cW, "y": cH * (1 - sea.getLength)},
+            {"x": 0, "y": cH * (1 - sea.getLength)},
+        ];
+        console.log(line)
     
-    canvas.append("path")
-        .attr("d", lineFunction(line))
-        .attr("fill", "#87CEFA")
-    
-    if (tide.getHeight != 0) {
-        canvas.append("text")
-            .attr("x", cW * 0.475)
-            .attr("y", cH * (1 - sea.getLength) - 10)
-            .attr("text-anchor", "middle")
-            .style("font-size", "24px")
-            .text("Tide");
+        var lineFunction = d3.line()
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; });
+        
+        canvas.append("path")
+            .attr("d", lineFunction(line))
+            .attr("fill", "#87CEFA")
+        
+        if (tide.getHeight != 0) {
+            canvas.append("text")
+                .attr("x", cW * 0.475)
+                .attr("y", cH * (1 - sea.getLength) - 10)
+                .attr("text-anchor", "middle")
+                .style("font-size", "24px")
+                .text("Tide");
+        }
     }
 
     return canvas
@@ -654,10 +658,7 @@ function drawAerialPreventions(canvas) {
         } else if (prev.name == "seawall") {
             var seaH =  beach.getBeachMinHeight - sea.getHeight - tide.getHeight
             if (prev.getYPos - prev.getHeight <= seaH) {
-                console.log("here bro")
                 canvas = drawAerialSeaWall(prev, canvas)
-            } else {
-                console.log("IDIOT")
             }
         } else {
             console.log("do something")
