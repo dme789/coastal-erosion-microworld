@@ -17,6 +17,7 @@ for (var i = 0; i < 10; i++) {
 drawSideCanvas(canvas)
 document.getElementById("currYear").innerHTML = 2023;
 document.getElementById("budgetRem").innerHTML = preventions.getBudget;
+document.getElementById("purchaseAmountTot").innerHTML = 0;
 
 
 // *************************** Main Draw Functions **********************************
@@ -125,14 +126,42 @@ function setSelectedTide() {
     }
 }
 
+const seaWallSelected = document.getElementById('seawall');
+seaWallSelected.addEventListener("change", function() {
+    if (seaWallSelected.checked) {
+        dropdownH.style.display = "block";
+    } else {
+        dropdownH.style.display = "none";
+    }
+})
+
+var preventionSelected = document.getElementsByName("preventionBought");
+for (var i = 0; i < preventionSelected.length; i++) {
+    preventionSelected[i].addEventListener("change", function() {
+        if (!seaWallSelected.checked) {
+            dropdownH.style.display = "none";
+        }
+    });
+}
+
+var preventionOptions = document.getElementsByName('preventionBought');
+preventionOptions.forEach(function(option) {
+    option.addEventListener('change', updatePurchaseAmount);
+});
+
+var seaWallOpt = document.getElementById("swHeightOptions");
+seaWallOpt.addEventListener('change', updatePurchaseAmount);
+
 const preventionPurchase = document.getElementById('confirmedPurchase');
 preventionPurchase.addEventListener('click', purchasePrevention);
 
 function purchasePrevention() {
     var prevention = getSelectedPrevention()
     if (prevention != null) {
-        if (prevention.value <= preventions.getBudget) {
-            preventions.decreaseBudget(prevention.value)
+        var purchaseCost = document.getElementById("purchaseAmountTot").textContent;
+        console.log(purchaseCost)
+        if (purchaseCost <= preventions.getBudget) {
+            preventions.decreaseBudget(purchaseCost)
             document.getElementById("budgetRem").innerHTML = preventions.getBudget;
             let canvasElem = document.querySelector('#canvas')
             canvasElem.addEventListener("click", function handler(e) {
@@ -145,6 +174,7 @@ function purchasePrevention() {
                 } else if (prevention.id == "seawall") {
                     const seaWall = Object.create(seaWalls)
                     seaWall.setLength = clickPos + (seaWall.getWidth / 2);
+                    seaWall.setHeight = (getUserSeaWallHeight() / canvasProp.getRealHeight)
                     seaWall.calcYPos();
                     preventions.addNew(seaWall)
                 }
@@ -231,6 +261,22 @@ function getSeaWallWaterLevel(length, heightToCheck) {
     }
     return length;
 }
+
+function updatePurchaseAmount() {
+    var prevention = getSelectedPrevention();
+    if(prevention.id == "seabees") {
+        document.getElementById("purchaseAmountTot").innerHTML = prevention.value;
+    } else if (prevention.id == "seawall") {
+        var wallH = getUserSeaWallHeight()
+        document.getElementById("purchaseAmountTot").innerHTML = (prevention.value * wallH);
+    }
+}
+
+function getUserSeaWallHeight() {
+    var dropdown = document.getElementById("swHeightOptions");
+    var selectedValue = dropdown.options[dropdown.selectedIndex].value;
+    return selectedValue;
+  }
 
 
 // *************************** Side View Draw Functions **********************************

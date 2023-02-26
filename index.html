@@ -87,9 +87,21 @@
                 <form>
                     <p>Prevention Options</p>
                     <input type="radio" id="seabees" name="preventionBought" value="15000">
-                    <label for="seabees">Seabees - €15000</label><br>
+                    <label for="seabees">Seabees</label><br>
                     <input type="radio" id="seawall" name="preventionBought" value="25000">
-                    <label for="seawall">Sea Wall - €25000</label><br>
+                    <label for="seawall">Sea Wall</label><br>
+                    <div id="dropdownH" style="display:none;">
+                        <p><b>Select a height:</b></p>
+                        <select id="swHeightOptions">
+                          <option value="1" selected>1m</option>
+                          <option value="2">2m</option>
+                          <option value="3">3m</option>
+                        </select>
+                    </div>
+                    <div id="purchaseAmount">
+                        <span>Cost of Purchase: €</span>
+                        <span id="purchaseAmountTot"></span>
+                    </div>
                     <button type="button" id="confirmedPurchase">Confirm Purchase</button>
                 </form> 
             </div>
