@@ -173,7 +173,7 @@ preventionPurchase.addEventListener('click', purchasePrevention);
 function purchasePrevention() {
     var prevention = getSelectedPrevention()
     if (prevention != null) {
-        var purchaseCost = document.getElementById("purchaseAmountTot").textContent;
+        var purchaseCost = parseInt((document.getElementById("purchaseAmountTot").textContent).replace(/\D/g,''));
         console.log(purchaseCost)
         if (purchaseCost <= preventions.getBudget) {
             preventions.decreaseBudget(purchaseCost)
