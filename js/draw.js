@@ -466,39 +466,40 @@ function drawSideMaxWave(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
     
+    var seaH =  cH * (beach.getBeachMinHeight - sea.getHeight - tH)
     // Before Preventions
     var maxUnbroken = tide.getLength;
-    var tempPs = []
-    for (var i = 0; i < preventions.bought.length; i++) {
-        if (preventions.bought[i].name == "seabees") {
-            if (maxUnbroken > preventions.bought[i].length) {
-                maxUnbroken = preventions.bought[i].length
+    var j = 0
+    for (var j; j < preventions.bought.length; j++) {
+        if (maxUnbroken > preventions.bought[j].getLength) {
+            if (cH * (preventions.bought[j].getYPos - preventions.bought[j].getHeight) <= seaH) {
+                maxUnbroken = preventions.bought[j].getLength
+                break;
             }
-            tempPs.push(preventions.bought[i])
         }
     }
     
     canvas = drawSideWave(canvas, tH, cW, cH, 0, maxUnbroken, waveHeight)
 
-    var start = 0;
     var end = 0;
     //After preventions
-    for (var i = 0; i < tempPs.length; i++) {
-        const prev = tempPs[i]
-        if (i+1 < tempPs.length){
-            end = tempPs[i+1].getLength - (tempPs[i+1].getWidth / 2)
+    for (var i = j; i < preventions.bought.length; i++) {
+        const prev = preventions.bought[i]
+        if (i+1 < preventions.bought.length){
+            end = preventions.bought[i+1].getLength - (preventions.bought[i+1].getWidth / 2)
         } else {
             end = beach.getBeachWidth;
         }
-        var seaH =  cH * (beach.getBeachMinHeight - sea.getHeight - tH)
         if (prev.name == "seabees") {
             if (cH * (prev.getYPos - prev.getHeight) <= seaH) {
                 waveHeight = waveHeight * prev.getWaveDecrease
             }
-            canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight)
-        } else if (prev.name == "seawall") {
-            canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight)
+        } else if (prev.name == "seawall" || prev.name == "sand") {
+            if (cH * (prev.getYPos - prev.getHeight) <= seaH) {
+                waveHeight = 0
+            }
         }
+        canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight)
     }
     
     return canvas
