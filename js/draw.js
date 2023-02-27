@@ -246,6 +246,16 @@ function incrementYear() {
     else {drawAerialCanvas(canvas)}
     document.getElementById("currYear").innerHTML = (2023 + canvasProp.getYear);
     document.getElementById("budgetRem").innerHTML = preventions.getBudget;
+    for(var i = 0; i < preventions.bought.length; i++) {
+        var prev = preventions.bought[i]
+        if (prev.name == "sand") {
+            if(prev.getLifeSpan == 1) {
+                preventions.bought.splice(i, 1)
+            } else {
+                prev.decreaseHeight();
+            }
+        }
+    }
 }
 
 function sortPreventions() {
@@ -581,6 +591,7 @@ function drawSideSeaWall(seawall, canvas) {
 function drawSideSand(sand, canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
+    console.log("Height: " + sand.getHeight)
     
     canvas.append("circle")
         .attr('cx', (cW * sand.getLength))

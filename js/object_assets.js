@@ -327,7 +327,7 @@ export const sand = {
     width: 0,
     length: 0,          
     yPos: 0,
-    lifeSpan: 10,
+    lifeSpan: 15,
     heightDecreaseRate: 0,
 
     get getName() {
@@ -367,7 +367,7 @@ export const sand = {
         this.heightDecreaseRate = this.height / this.lifeSpan; 
     },
     decreaseHeight: function() {
-        this.height = this.height + this.heightDecreaseRate;
+        this.height = this.height - this.heightDecreaseRate;
         this.lifeSpan = this.lifeSpan - 1;
     },
     calcYPos: function() {
