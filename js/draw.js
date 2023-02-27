@@ -1,5 +1,11 @@
 import {canvasProp, beach, dune, sea, tide, maxWave, preventions, seaBees, housesArr, house, seaWalls, sand} from './object_assets.js';
 
+// Gets the client's (user) canvas dimensions to set within our canvasProp
+console.log(document.getElementById('canvasPlaceHolder').getBoundingClientRect())
+canvasProp.setCanvasHeight = document.getElementById('canvasPlaceHolder').getBoundingClientRect().height;
+canvasProp.setCanvasWidth = document.getElementById('canvasPlaceHolder').getBoundingClientRect().width;
+
+
 // Setups up initial canvas as svg to draw on.
 // Then calls drawSideCanvas to draw the side view initially
 var canvas = d3.select("#canvas")

@@ -1,7 +1,7 @@
 // Canvas properties
 export const canvasProp = {
-    height: 500,
-    width: 950,
+    height: 0,
+    width: 0,
     realHeight: 15,
     state: 0,       // 0 = side view, 1 = aerial view
     year: 0,

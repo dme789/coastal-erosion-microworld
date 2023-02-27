@@ -18,10 +18,14 @@
 
 .page1 .canvas {
     background-color: #E8E8E8;
-    min-width: 950px;
+    /* min-width: 950px;
     max-width: 950px;
-    max-height: 500px;
+    max-height: 500px; */
     min-height: 500px;
+}
+
+#canvasPlaceHolder {
+    min-height: 60vh;
 }
 
 #dropdownH {
