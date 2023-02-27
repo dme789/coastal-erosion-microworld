@@ -16,7 +16,7 @@ for (var i = 0; i < 10; i++) {
 
 drawSideCanvas(canvas)
 document.getElementById("currYear").innerHTML = 2023;
-document.getElementById("budgetRem").innerHTML = preventions.getBudget;
+document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
 document.getElementById("purchaseAmountTot").innerHTML = 0;
 
 
@@ -68,7 +68,6 @@ function drawBackground(canvas) {
 
 const sideViewOption = document.getElementById('sideViewButton');
 sideViewOption.addEventListener('click', reDrawSideCanvas);
-
 function reDrawSideCanvas() {
     canvasProp.setState = 0
     drawSideCanvas(canvas)
@@ -76,14 +75,12 @@ function reDrawSideCanvas() {
 
 const aerialViewOption = document.getElementById('aerialViewButton');
 aerialViewOption.addEventListener('click', reDrawAerialCanvas);
-
 function reDrawAerialCanvas() {
     canvasProp.setState = 1
     drawAerialCanvas(canvas)
 }
 
 var timeSlider = d3.select("#timeSlider");
-
 timeSlider.on("input", function() {
     if (this.value > canvasProp.getYear) {
         incrementYear();
@@ -91,7 +88,6 @@ timeSlider.on("input", function() {
 });
 
 var waveSlider = d3.select("#maxWaveHeightSlider");
-
 waveSlider.on("input", function() {
     maxWave.setHeight = this.value;
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
@@ -175,7 +171,7 @@ function purchasePrevention() {
         console.log(purchaseCost)
         if (purchaseCost <= preventions.getBudget) {
             preventions.decreaseBudget(purchaseCost)
-            document.getElementById("budgetRem").innerHTML = preventions.getBudget;
+            document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
             let canvasElem = document.querySelector('#canvas')
             canvasElem.addEventListener("click", function handler(e) {
                 var clickPos = getMousePosCanvas(canvasElem, e)
@@ -245,7 +241,7 @@ function incrementYear() {
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
     else {drawAerialCanvas(canvas)}
     document.getElementById("currYear").innerHTML = (2023 + canvasProp.getYear);
-    document.getElementById("budgetRem").innerHTML = preventions.getBudget;
+    document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
     for(var i = 0; i < preventions.bought.length; i++) {
         var prev = preventions.bought[i]
         if (prev.name == "sand") {
@@ -306,13 +302,13 @@ function getPreventionWaterLevel(length, heightToCheck) {
 function updatePurchaseAmount() {
     var prevention = getSelectedPrevention();
     if(prevention.id == "seabees") {
-        document.getElementById("purchaseAmountTot").innerHTML = prevention.value;
+        document.getElementById("purchaseAmountTot").innerHTML = (prevention.value * 1).toLocaleString();
     } else if (prevention.id == "seawall") {
         var wallH = getUserPreventionHeight()
-        document.getElementById("purchaseAmountTot").innerHTML = (prevention.value * wallH);
+        document.getElementById("purchaseAmountTot").innerHTML = (prevention.value * wallH).toLocaleString();
     } else if (prevention.id == "sand") {
         var sandH = getUserPreventionHeight()
-        document.getElementById("purchaseAmountTot").innerHTML = (prevention.value * sandH);
+        document.getElementById("purchaseAmountTot").innerHTML = (prevention.value * sandH).toLocaleString();
     }
 }
 
