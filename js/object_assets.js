@@ -48,6 +48,7 @@ export const beach = {
     },
     set setBeachWidth(val) {
         this.width = val;
+        this.reCalculateSlope();
     },
     get getBeachSlope() {
         return this.slope;
@@ -60,12 +61,14 @@ export const beach = {
     },
     set setBeachMaxHeight(val) {
         this.maxHeight = val;
+        this.reCalculateSlope();
     },
     get getBeachMinHeight() {
         return this.minHeight;
     },
     set setBeachMinHeight(val) {
         this.minHeight = val;
+        this.reCalculateSlope();
     }
 };
 
@@ -315,6 +318,61 @@ export const seaWalls = {
         this.height = h;
         this.width = w;
         this.length = l;
+    }
+}
+
+export const sand = {
+    name: "sand",
+    height: 0,
+    width: 0,
+    length: 0,          
+    yPos: 0,
+    lifeSpan: 10,
+    heightDecreaseRate: 0,
+
+    get getName() {
+        return this.name;
+    },
+    get getHeight() {
+        return this.height;
+    },
+    set setHeight(val) {
+        this.height = val;
+    },
+    get getWidth() {
+        return this.width
+    },
+    set setWidth(val) {
+        this.width = val;
+    },
+    get getLength() {
+        return this.length
+    },
+    set setLength(val) {
+        this.length = val;
+    },
+    get getYPos() {
+        return this.yPos;
+    },
+    set setYPos(val) {
+        this.yPos = val;
+    },
+    get getLifeSpan() {
+        return this.lifeSpan;
+    },
+    get getHeightDecreaseRate() {
+        return this.heightDecreaseRate;
+    },
+    calcDecreaseRate: function() {
+        this.heightDecreaseRate = this.height / this.lifeSpan; 
+    },
+    decreaseHeight: function() {
+        this.height = this.height + this.heightDecreaseRate;
+        this.lifeSpan = this.lifeSpan - 1;
+    },
+    calcYPos: function() {
+        var rise = (this.length - (this.width/2) - 0.005) * beach.getBeachSlope;
+        this.yPos = beach.getBeachMinHeight - rise;
     }
 }
 

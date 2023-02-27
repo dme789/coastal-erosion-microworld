@@ -1,4 +1,4 @@
-import {canvasProp, beach, dune, sea, tide, maxWave, preventions, seaBees, housesArr, house, seaWalls} from './object_assets.js';
+import {canvasProp, beach, dune, sea, tide, maxWave, preventions, seaBees, housesArr, house, seaWalls, sand} from './object_assets.js';
 
 // Setups up initial canvas as svg to draw on.
 // Then calls drawSideCanvas to draw the side view initially
@@ -135,11 +135,24 @@ seaWallSelected.addEventListener("change", function() {
     }
 })
 
+const sandSelected = document.getElementById('sand');
+sandSelected.addEventListener("change", function() {
+    if (sandSelected.checked) {
+        dropdownH.style.display = "block";
+    } else {
+        dropdownH.style.display = "none";
+    }
+})
+
 var preventionSelected = document.getElementsByName("preventionBought");
 for (var i = 0; i < preventionSelected.length; i++) {
     preventionSelected[i].addEventListener("change", function() {
-        if (!seaWallSelected.checked) {
-            dropdownH.style.display = "none";
+        if (seaWallSelected.checked) {
+            dropdownH.style.display = "block";
+        } else if(sandSelected.checked) {
+            dropdownH.style.display = "block"
+        } else {
+            dropdownH.style.display = "none"
         }
     });
 }
@@ -149,7 +162,7 @@ preventionOptions.forEach(function(option) {
     option.addEventListener('change', updatePurchaseAmount);
 });
 
-var seaWallOpt = document.getElementById("swHeightOptions");
+var seaWallOpt = document.getElementById("preventionHeightOptions");
 seaWallOpt.addEventListener('change', updatePurchaseAmount);
 
 const preventionPurchase = document.getElementById('confirmedPurchase');
@@ -174,9 +187,20 @@ function purchasePrevention() {
                 } else if (prevention.id == "seawall") {
                     const seaWall = Object.create(seaWalls)
                     seaWall.setLength = clickPos + (seaWall.getWidth / 2);
-                    seaWall.setHeight = (getUserSeaWallHeight() / canvasProp.getRealHeight)
+                    console.log(seaWall.getHeight)
+                    seaWall.setHeight = (getUserPreventionHeight() / canvasProp.getRealHeight)
                     seaWall.calcYPos();
                     preventions.addNew(seaWall)
+                } else if (prevention.id == "sand") {
+                    const sandNew = Object.create(sand)
+                    var sandH = getUserPreventionHeight()
+                    sandNew.setHeight = (sandH / canvasProp.getRealHeight);
+                    console.log(sandNew.getHeight)
+                    sandNew.setWidth = (sandH / 20) + 0.05;
+                    sandNew.setLength = clickPos + (sandNew.getWidth / 2);
+                    sandNew.calcYPos();
+                    sandNew.calcDecreaseRate();
+                    preventions.addNew(sandNew)
                 }
                 sortPreventions()
                 if (canvasProp.getState == 0) {
@@ -267,13 +291,16 @@ function updatePurchaseAmount() {
     if(prevention.id == "seabees") {
         document.getElementById("purchaseAmountTot").innerHTML = prevention.value;
     } else if (prevention.id == "seawall") {
-        var wallH = getUserSeaWallHeight()
+        var wallH = getUserPreventionHeight()
         document.getElementById("purchaseAmountTot").innerHTML = (prevention.value * wallH);
+    } else if (prevention.id == "sand") {
+        var sandH = getUserPreventionHeight()
+        document.getElementById("purchaseAmountTot").innerHTML = (prevention.value * sandH);
     }
 }
 
-function getUserSeaWallHeight() {
-    var dropdown = document.getElementById("swHeightOptions");
+function getUserPreventionHeight() {
+    var dropdown = document.getElementById("preventionHeightOptions");
     var selectedValue = dropdown.options[dropdown.selectedIndex].value;
     return selectedValue;
   }
@@ -492,6 +519,8 @@ function drawSidePreventions(canvas) {
             canvas = drawSideSeaBee(prev, canvas)
         } else if (prev.name == "seawall") {
             canvas = drawSideSeaWall(prev, canvas)
+        } else if (prev.name == "sand") {
+            canvas = drawSideSand(prev, canvas)
         } else {
             console.log("do something")
         }
@@ -545,6 +574,21 @@ function drawSideSeaWall(seawall, canvas) {
         .attr("stroke", "black")
         .attr("stroke-width", 0.5)
         .attr("fill", "#595959");
+
+    return canvas;
+}
+
+function drawSideSand(sand, canvas) {
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+    
+    canvas.append("circle")
+        .attr('cx', (cW * sand.getLength))
+        .attr('cy', (cH * sand.getYPos))
+        .attr('r', (cH * sand.getHeight))
+        .attr('stroke', 'black')
+        .attr("stroke-width", 0.5)
+        .attr('fill', '#FAFAD2');
 
     return canvas;
 }
