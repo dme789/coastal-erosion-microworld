@@ -13,15 +13,16 @@ var canvas = d3.select("#canvas")
     .attr("height", canvasProp.getCanvasHeight);
 
 // Creating predefined houses - first row
+var j = 0.01
 for (var i = 0; i < 10; i++) {
     const houseT = Object.create(house)
-    houseT.createNew(0.1, 0.05, 0.08, (i * 0.1), 50000)
+    houseT.createNew(0.1, 0.05, 0.08, ((i * 0.1) + j), 50000)
     housesArr.getHouses.push(houseT)
 }
 // Creating predefined houses - second row
 for (var i = 0; i < 10; i++) {
     const houseT = Object.create(house)
-    houseT.createNew(0.1, 0.05, 0.08, (i * 0.1), 40000)
+    houseT.createNew(0.1, 0.05, 0.08, ((i * 0.1) + j), 40000)
     housesArr.getHouses.push(houseT)
 }
 
