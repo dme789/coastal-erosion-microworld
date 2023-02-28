@@ -152,15 +152,31 @@ sandSelected.addEventListener("change", function() {
     }
 })
 
+const buyHousesSelected = document.getElementById('buyHouses');
+buyHousesSelected.addEventListener("change", function() {
+    if (buyHousesSelected.checked) {
+        buyHousesInstructions.style.display = "block";
+    } else {
+        buyHousesInstructions.style.display = "none";
+    }
+})
+
 var preventionSelected = document.getElementsByName("preventionBought");
 for (var i = 0; i < preventionSelected.length; i++) {
     preventionSelected[i].addEventListener("change", function() {
         if (seaWallSelected.checked) {
             dropdownH.style.display = "block";
+            buyHousesInstructions.style.display = "none";
         } else if(sandSelected.checked) {
             dropdownH.style.display = "block"
-        } else {
+            buyHousesInstructions.style.display = "none";
+        } else if(buyHousesSelected.checked) {
             dropdownH.style.display = "none"
+            buyHousesInstructions.style.display = "block";
+        }
+        else {
+            dropdownH.style.display = "none"
+            buyHousesInstructions.style.display = "none";
         }
     });
 }
