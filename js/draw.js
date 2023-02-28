@@ -1,7 +1,6 @@
 import {canvasProp, beach, dune, sea, tide, maxWave, preventions, seaBees, housesArr, house, seaWalls, sand} from './object_assets.js';
 
 // Gets the client's (user) canvas dimensions to set within our canvasProp
-console.log(document.getElementById('canvasPlaceHolder').getBoundingClientRect())
 canvasProp.setCanvasHeight = document.getElementById('canvasPlaceHolder').getBoundingClientRect().height;
 canvasProp.setCanvasWidth = document.getElementById('canvasPlaceHolder').getBoundingClientRect().width;
 
@@ -13,10 +12,16 @@ var canvas = d3.select("#canvas")
     .attr("width", canvasProp.getCanvasWidth)
     .attr("height", canvasProp.getCanvasHeight);
 
-// Creating predefined houses
+// Creating predefined houses - first row
 for (var i = 0; i < 10; i++) {
     const houseT = Object.create(house)
-    houseT.createNew(0.16, 0.05, 0.08, (i * 0.1))
+    houseT.createNew(0.1, 0.05, 0.08, (i * 0.1), 50000)
+    housesArr.getHouses.push(houseT)
+}
+// Creating predefined houses - second row
+for (var i = 0; i < 10; i++) {
+    const houseT = Object.create(house)
+    houseT.createNew(0.1, 0.05, 0.08, (i * 0.1), 40000)
     housesArr.getHouses.push(houseT)
 }
 
@@ -618,15 +623,37 @@ function drawSideHouse(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
 
-    var xPos = 101.5;
-    var yPos = 80;
+    var distRow = 0;
+    var fillColour = "#946b4b"
+    for(var i = 0; i < 2; i ++) {
+        const tempHouse = housesArr.getHouses[i * 10]
+        if (i > 0) {distRow = 0.1; fillColour = "#a9886e"}
+        var line = [
+            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow), "y": cH * (beach.getBeachMaxHeight - dune.getDuneHeight)},
+            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow), "y": cH * (beach.getBeachMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
+            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow + tempHouse.getWidth), "y": cH * (beach.getBeachMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
+            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow + tempHouse.getWidth), "y": cH * (beach.getBeachMaxHeight - dune.getDuneHeight)},
+            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow), "y": cH * (beach.getBeachMaxHeight - dune.getDuneHeight)}
+        ];
+        
+        var lineFunction = d3.line()
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; });
+            
+        canvas.append("path")
+            .attr("d", lineFunction(line))
+            .attr("fill", fillColour)
+    }
+
+    // var xPos = 101.5;
+    // var yPos = 80;
     
-    canvas.append('image')
-        .attr("xlink:href", "imgs/sideHouse.png")
-        .attr('width', xPos)
-        .attr('height', yPos)
-        .attr("x", cW * (1 - dune.getDuneWidth + 0.05))
-        .attr("y", cH * (1 - beach.getBeachMaxHeight - dune.getDuneHeight - 0.06));
+    // canvas.append('image')
+    //     .attr("xlink:href", "imgs/sideHouse.png")
+    //     .attr('width', yPos)
+    //     .attr('height', 10)
+    //     .attr("x", cW * (1 - dune.getDuneWidth + 0.025))
+    //     .attr("y", cH * (1 - beach.getBeachMaxHeight - dune.getDuneHeight - ((yPos/2) /cH)));
 
     return canvas;
 }
@@ -819,14 +846,17 @@ function drawAerialSeaWall (seaWall, canvas) {
 function drawAerialHouses(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
+    var distRow = 0;
+    var fillColour = "#946b4b"
     for (var i = 0; i < housesArr.getHouses.length; i++) {
         const tempHouse = housesArr.getHouses[i]
+        if (i >= 10) {distRow = 0.1; fillColour = "#a9886e"}
         var line = [
-            {"x": cW * tempHouse.getXPos, "y": cH * (dune.getDuneWidth - 0.05)},
-            {"x": cW * tempHouse.getXPos, "y": cH * (dune.getDuneWidth - 0.05 - tempHouse.getWidth)},
-            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (dune.getDuneWidth - 0.05 - tempHouse.getWidth)},
-            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (dune.getDuneWidth - 0.05)},
-            {"x": cW * tempHouse.getXPos, "y": cH * (dune.getDuneWidth - 0.05)}
+            {"x": cW * tempHouse.getXPos, "y": cH * (dune.getDuneWidth - dune.getDuneBankLength - distRow)},
+            {"x": cW * tempHouse.getXPos, "y": cH * (dune.getDuneWidth - dune.getDuneBankLength - tempHouse.getWidth - distRow)},
+            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (dune.getDuneWidth - dune.getDuneBankLength - tempHouse.getWidth - distRow)},
+            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (dune.getDuneWidth - dune.getDuneBankLength - distRow)},
+            {"x": cW * tempHouse.getXPos, "y": cH * (dune.getDuneWidth - dune.getDuneBankLength - distRow)}
         ];
     
         var lineFunction = d3.line()
@@ -835,7 +865,7 @@ function drawAerialHouses(canvas) {
         
         canvas.append("path")
             .attr("d", lineFunction(line))
-            .attr("fill", "#946b4b")
+            .attr("fill", fillColour)
     }
     return canvas
 }

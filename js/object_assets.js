@@ -389,6 +389,7 @@ export const house = {
     width: 0,
     length: 0,
     xPos: 0,
+    value: 0,
 
     get getHeight() {
         return this.height;
@@ -414,10 +415,17 @@ export const house = {
     set setXPos(val) {
         this.xPos = val
     },
-    createNew: function(h, w, l, x) {
+    get getValue() {
+        return this.value;
+    },
+    set setValue(val) {
+        this.value = val;
+    },
+    createNew: function(h, w, l, x, a) {
         this.height = h;
         this.width = w;
         this.length = l;
         this.xPos = x;
+        this.value = a;
     }
 }
