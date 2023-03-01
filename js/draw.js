@@ -1,4 +1,4 @@
-import {canvasProp, beach, dune, sea, tide, maxWave, preventions, seaBees, housesArr, house, seaWalls, sand} from './object_assets.js';
+import {canvasProp, beach, dune, sea, tide, maxWave, preventions, seaBees, housesArr, house, seaWalls} from './object_assets.js';
 
 // Gets the client's (user) canvas dimensions to set within our canvasProp
 canvasProp.setCanvasHeight = document.getElementById('canvasPlaceHolder').getBoundingClientRect().height;
@@ -228,6 +228,9 @@ function purchasePrevention() {
                 var sandH = (getUserPreventionHeight() / (2 * canvasProp.getRealHeight));
                 beach.setBeachMinHeight = beach.getBeachMinHeight - sandH;
                 beach.setBeachMaxHeight = beach.getBeachMaxHeight - sandH;
+                beach.setLifeSpan = 15;
+                beach.calcDecreaseRate();
+                sea.calcSeaLength();
                 if (canvasProp.getState == 0) {
                     canvas = drawSidePreventions(canvas)
                     drawSideCanvas(canvas)
@@ -264,18 +267,23 @@ function incrementYear() {
     canvasProp.incrementYear()
     sea.increaseSeaRise(seaRise / 100);    // meters to cm
     preventions.increaseBudget(1000);
+    decreaseBeach()
     document.getElementById("timeSlider").value = canvasProp.getYear;
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
     else {drawAerialCanvas(canvas)}
     document.getElementById("currYear").innerHTML = (2023 + canvasProp.getYear);
     document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
-    for(var i = 0; i < preventions.bought.length; i++) {
-        var prev = preventions.bought[i]
-        if (prev.name == "sand") {
-            if(prev.getLifeSpan == 1) {
-                preventions.bought.splice(i, 1)
-            } else {
-                prev.decreaseHeight();
+}
+
+function decreaseBeach() {
+    if (beach.getLifeSpan > 0 ) {
+        beach.decreaseHeight()
+        for(var i = 0; i < preventions.bought.length; i++) {
+            var prev = preventions.bought[i]
+            var minHeightAtPrev = beach.getAbsMinHeight - (prev.getLength * beach.getBeachSlope)
+            var currHeightAtPrev = beach.getBeachMinHeight - ((prev.getLength - (prev.getWidth / 2)) * beach.getBeachSlope)
+            if (minHeightAtPrev > prev.getYPos) {
+                prev.setYPos = currHeightAtPrev
             }
         }
     }
@@ -418,6 +426,7 @@ function drawSideSea(canvas) {
     const cW = canvasProp.getCanvasWidth
 
     var seaLength = getPreventionWaterLevel(sea.getLength, (beach.getAbsMinHeight - sea.getHeight - tide.getHeight))
+    console.log("L1 " + seaLength)
     
     var line = [
         {"x": 0, "y": cH},
@@ -426,8 +435,6 @@ function drawSideSea(canvas) {
         {"x": cW * seaLength, "y": cH},
         {"x": 0, "y": cH},
     ];
-
-    console.log(line)
 
     var lineFunction = d3.line()
         .x(function(d) { return d.x; })
@@ -491,7 +498,7 @@ function drawSideMaxWave(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
     
-    var seaH =  cH * (beach.getBeachMinHeight - sea.getHeight - tH)
+    var seaH =  cH * (beach.getAbsMinHeight - sea.getHeight - tH)
     // Before Preventions
     var maxUnbroken = tide.getLength;
     var j = 0
@@ -538,11 +545,11 @@ function drawSideWave(canvas, tH, cW, cH, xmin, xmax, waveH) {
         if (highLow % 2 != 0) {
             variableT = waveH
         }
-        var height = cH * (beach.getBeachMinHeight - sea.getHeight - tH - variableT)
+        var height = cH * (beach.getAbsMinHeight - sea.getHeight - tH - variableT)
         line[highLow] = {"x": cW * i, "y": height}
         highLow = highLow + 1;
     }
-    line.push({"x": cW * xmax, "y": cH * (beach.getBeachMinHeight - sea.getHeight - tH)})
+    line.push({"x": cW * xmax, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tH)})
 
     if (line != []) {
         var lineFunction = d3.line()
@@ -565,9 +572,6 @@ function drawSidePreventions(canvas) {
         } else if (prev.name == "seawall") {
             canvas = drawSideSeaWall(prev, canvas)
         }
-        // } else if (prev.name == "sand") {
-        //     canvas = drawSideSand(prev, canvas)
-        // }
     }
     return canvas;
 }
@@ -622,22 +626,6 @@ function drawSideSeaWall(seawall, canvas) {
     return canvas;
 }
 
-function drawSideSand(sand, canvas) {
-    const cH = canvasProp.getCanvasHeight
-    const cW = canvasProp.getCanvasWidth
-    console.log("Height: " + sand.getHeight)
-    
-    canvas.append("circle")
-        .attr('cx', (cW * sand.getLength))
-        .attr('cy', (cH * sand.getYPos))
-        .attr('r', (cH * sand.getHeight))
-        .attr('stroke', 'black')
-        .attr("stroke-width", 0.5)
-        .attr('fill', '#FAFAD2');
-
-    return canvas;
-}
-
 function drawSideHouse(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
@@ -648,11 +636,11 @@ function drawSideHouse(canvas) {
         const tempHouse = housesArr.getHouses[i * 10]
         if (i > 0) {distRow = 0.1; fillColour = "#a9886e"}
         var line = [
-            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow), "y": cH * (beach.getBeachMaxHeight - dune.getDuneHeight)},
-            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow), "y": cH * (beach.getBeachMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
-            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow + tempHouse.getWidth), "y": cH * (beach.getBeachMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
-            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow + tempHouse.getWidth), "y": cH * (beach.getBeachMaxHeight - dune.getDuneHeight)},
-            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow), "y": cH * (beach.getBeachMaxHeight - dune.getDuneHeight)}
+            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
+            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
+            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow + tempHouse.getWidth), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
+            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow + tempHouse.getWidth), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
+            {"x": cW * (beach.getBeachWidth + dune.getDuneBankLength + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)}
         ];
         
         var lineFunction = d3.line()

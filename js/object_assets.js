@@ -44,6 +44,8 @@ export const beach = {
     slope: 0.125,      // rise/run => min
     absMinHeight: 0.65,
     absMaxHeight: 0.55,
+    lifeSpan: 0,
+    heightDecreaseRate: 0,
 
     get getBeachWidth() {
         return this.width;
@@ -89,7 +91,24 @@ export const beach = {
     set setAbsMaxHeight(val) {
         this.absMaxHeight = val;
         this.reCalculateSlope();
-    }
+    },
+    get getLifeSpan() {
+        return this.lifeSpan;
+    },
+    set setLifeSpan(val) {
+        this.lifeSpan = val;
+    },
+    get getHeightDecreaseRate() {
+        return this.heightDecreaseRate;
+    },
+    calcDecreaseRate: function() {
+        this.heightDecreaseRate = (this.maxHeight - this.absMaxHeight) / this.lifeSpan; 
+    },
+    decreaseHeight: function() {
+        this.maxHeight = this.maxHeight - this.heightDecreaseRate;
+        this.minHeight = this.minHeight - this.heightDecreaseRate;
+        this.lifeSpan = this.lifeSpan - 1;
+    },
 };
 
 // Beach object and relevant functions
@@ -147,17 +166,22 @@ export const sea = {
     increaseSeaRise: function(val) {
         var tempSeaRise = (1 / canvasProp.getRealHeight) * val;
         this.totalSeaRise = this.totalSeaRise + tempSeaRise;
-        if ((beach.getAbsMinHeight - this.height) >= beach.getBeachMaxHeight) {
-            this.height = this.height + tempSeaRise;
-            console.log(this.height)
-            this.length = this.height / beach.getBeachSlope;
-            console.log(beach.getBeachSlope)
+        this.height = this.height + tempSeaRise;
+        this.calcSeaLength();
+    },
+    calcSeaLength: function() {
+        if ((beach.getAbsMinHeight - this.height) >= beach.getBeachMinHeight) {
+            console.log("I'm here 1")
+            this.length = 0;
+        } else if ((beach.getAbsMinHeight - this.height) >= beach.getBeachMaxHeight) {
+            console.log("I'm here 2")
+            this.length = (this.height - (beach.getAbsMinHeight - beach.getBeachMinHeight)) / beach.getBeachSlope;
+            console.log("L2 " + this.length)
         } else if ((beach.getAbsMinHeight - this.height) >= (beach.getBeachMaxHeight - dune.getDuneHeight)) {
-            this.height = this.height + tempSeaRise;
+            console.log("I'm here 3")
             var duneWaterLine = beach.getAbsMinHeight - (beach.getAbsMinHeight - this.height);
             this.length = beach.getBeachWidth + (duneWaterLine/ dune.getSlope);
         } else {
-            this.height = this.height + tempSeaRise;
             this.length = 1
         }
     }
@@ -228,7 +252,7 @@ export const maxWave = {
 }
 
 export const preventions = {
-    budget: 50000,
+    budget: 500000,
     bought: [],
 
     get getBudget() {
@@ -340,61 +364,6 @@ export const seaWalls = {
         this.height = h;
         this.width = w;
         this.length = l;
-    }
-}
-
-export const sand = {
-    name: "sand",
-    height: 0,
-    width: 0,
-    length: 0,          
-    yPos: 0,
-    lifeSpan: 15,
-    heightDecreaseRate: 0,
-
-    get getName() {
-        return this.name;
-    },
-    get getHeight() {
-        return this.height;
-    },
-    set setHeight(val) {
-        this.height = val;
-    },
-    get getWidth() {
-        return this.width
-    },
-    set setWidth(val) {
-        this.width = val;
-    },
-    get getLength() {
-        return this.length
-    },
-    set setLength(val) {
-        this.length = val;
-    },
-    get getYPos() {
-        return this.yPos;
-    },
-    set setYPos(val) {
-        this.yPos = val;
-    },
-    get getLifeSpan() {
-        return this.lifeSpan;
-    },
-    get getHeightDecreaseRate() {
-        return this.heightDecreaseRate;
-    },
-    calcDecreaseRate: function() {
-        this.heightDecreaseRate = this.height / this.lifeSpan; 
-    },
-    decreaseHeight: function() {
-        this.height = this.height - this.heightDecreaseRate;
-        this.lifeSpan = this.lifeSpan - 1;
-    },
-    calcYPos: function() {
-        var rise = (this.length - (this.width/2) - 0.005) * beach.getBeachSlope;
-        this.yPos = beach.getBeachMinHeight - rise;
     }
 }
 
