@@ -42,6 +42,8 @@ export const beach = {
     minHeight: 0.65,
     maxHeight: 0.55,
     slope: 0.125,      // rise/run => min
+    absMinHeight: 0.65,
+    absMaxHeight: 0.55,
 
     get getBeachWidth() {
         return this.width;
@@ -54,20 +56,38 @@ export const beach = {
         return this.slope;
     },
     reCalculateSlope: function() {
-        this.slope = (this.maxHeight - this.minHeight) / this.width;
+        this.slope = (this.minHeight - this.maxHeight) / this.width;
     },
     get getBeachMaxHeight() {
         return this.maxHeight;
     },
     set setBeachMaxHeight(val) {
-        this.maxHeight = val;
-        this.reCalculateSlope();
+        if (val < this.absMaxHeight) {
+            this.maxHeight = val;
+            this.reCalculateSlope();
+        }
     },
     get getBeachMinHeight() {
         return this.minHeight;
     },
     set setBeachMinHeight(val) {
-        this.minHeight = val;
+        if (val < this.absMinHeight) {
+            this.minHeight = val;
+            this.reCalculateSlope();
+        }
+    },
+    get getAbsMinHeight() {
+        return this.absMinHeight
+    },
+    set setAbsMinHeight(val) {
+        this.absMinHeight = val;
+        this.reCalculateSlope();
+    },
+    get getAbsMaxHeight() {
+        return this.absMaxHeight
+    },
+    set setAbsMaxHeight(val) {
+        this.absMaxHeight = val;
         this.reCalculateSlope();
     }
 };
@@ -127,12 +147,14 @@ export const sea = {
     increaseSeaRise: function(val) {
         var tempSeaRise = (1 / canvasProp.getRealHeight) * val;
         this.totalSeaRise = this.totalSeaRise + tempSeaRise;
-        if ((beach.getBeachMinHeight - this.height) >= beach.getBeachMaxHeight) {
+        if ((beach.getAbsMinHeight - this.height) >= beach.getBeachMaxHeight) {
             this.height = this.height + tempSeaRise;
+            console.log(this.height)
             this.length = this.height / beach.getBeachSlope;
-        } else if ((beach.getBeachMinHeight - this.height) >= (beach.getBeachMaxHeight - dune.getDuneHeight)) {
+            console.log(beach.getBeachSlope)
+        } else if ((beach.getAbsMinHeight - this.height) >= (beach.getBeachMaxHeight - dune.getDuneHeight)) {
             this.height = this.height + tempSeaRise;
-            var duneWaterLine = beach.getBeachMaxHeight - (beach.getBeachMinHeight - this.height);
+            var duneWaterLine = beach.getAbsMinHeight - (beach.getAbsMinHeight - this.height);
             this.length = beach.getBeachWidth + (duneWaterLine/ dune.getSlope);
         } else {
             this.height = this.height + tempSeaRise;

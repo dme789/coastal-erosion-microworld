@@ -200,40 +200,35 @@ function purchasePrevention() {
         if (purchaseCost <= preventions.getBudget) {
             preventions.decreaseBudget(purchaseCost)
             document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
-            let canvasElem = document.querySelector('#canvas')
-            canvasElem.addEventListener("click", function handler(e) {
-                var clickPos = getMousePosCanvas(canvasElem, e)
-                if (prevention.id == "seabees") {
-                    const seaBee = Object.create(seaBees)
-                    seaBee.setLength = clickPos + (seaBee.getWidth / 2);
-                    seaBee.calcYPos();
-                    preventions.addNew(seaBee)
-                } else if (prevention.id == "seawall") {
-                    const seaWall = Object.create(seaWalls)
-                    seaWall.setLength = clickPos + (seaWall.getWidth / 2);
-                    console.log(seaWall.getHeight)
-                    seaWall.setHeight = (getUserPreventionHeight() / canvasProp.getRealHeight)
-                    seaWall.calcYPos();
-                    preventions.addNew(seaWall)
-                } else if (prevention.id == "sand") {
-                    const sandNew = Object.create(sand)
-                    var sandH = getUserPreventionHeight()
-                    sandNew.setHeight = (sandH / canvasProp.getRealHeight);
-                    console.log(sandNew.getHeight)
-                    sandNew.setWidth = (sandH / 20);
-                    sandNew.setLength = clickPos + (sandNew.getWidth / 2);
-                    sandNew.calcYPos();
-                    sandNew.calcDecreaseRate();
-                    preventions.addNew(sandNew)
-                }
-                sortPreventions()
-                if (canvasProp.getState == 0) {
-                    canvas = drawSidePreventions(canvas)
-                    drawSideCanvas(canvas)
-                }
-                else {drawAerialCanvas(canvas)}
+            if (prevention.id != "sand") {
+                let canvasElem = document.querySelector('#canvas')
+                canvasElem.addEventListener("click", function handler(e) {
+                    var clickPos = getMousePosCanvas(canvasElem, e)
+                    if (prevention.id == "seabees") {
+                        const seaBee = Object.create(seaBees)
+                        seaBee.setLength = clickPos + (seaBee.getWidth / 2);
+                        seaBee.calcYPos();
+                        preventions.addNew(seaBee)
+                    } else if (prevention.id == "seawall") {
+                        const seaWall = Object.create(seaWalls)
+                        seaWall.setLength = clickPos + (seaWall.getWidth / 2);
+                        console.log(seaWall.getHeight)
+                        seaWall.setHeight = (getUserPreventionHeight() / canvasProp.getRealHeight)
+                        seaWall.calcYPos();
+                        preventions.addNew(seaWall)
+                    }
+                })
                 e.currentTarget.removeEventListener(e.type, handler)
-            })
+            } else {
+                var sandH = (getUserPreventionHeight() / (2 * canvasProp.getRealHeight));
+                beach.setBeachMinHeight = beach.getBeachMinHeight - sandH;
+                beach.setBeachMaxHeight = beach.getBeachMaxHeight - sandH;
+            }
+            sortPreventions()
+            if (canvasProp.getState == 0) {
+                canvas = drawSidePreventions(canvas)
+                drawSideCanvas(canvas)
+            } else {drawAerialCanvas(canvas)}
         } else {
             window.alert("You do not have the budget available to make this purchase");
         }
@@ -388,8 +383,8 @@ function drawSideDune(canvas) {
     var line = [
         {"x": cW * beach.getBeachWidth, "y": cH},
         {"x": cW * beach.getBeachWidth, "y": cH * beach.getBeachMaxHeight},
-        {"x": cW * (beach.getBeachWidth + dune.bankLength), "y": cH * (beach.getBeachMaxHeight - dune.getDuneHeight)},
-        {"x": cW, "y": cH * (beach.getBeachMaxHeight - dune.getDuneHeight)},
+        {"x": cW * (beach.getBeachWidth + dune.bankLength), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
+        {"x": cW, "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
         {"x": cW, "y": cH},
         {"x": cW * beach.getBeachWidth, "y": cH}
     ];
@@ -418,15 +413,17 @@ function drawSideSea(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
 
-    var seaLength = getPreventionWaterLevel(sea.getLength, (beach.getBeachMinHeight - sea.getHeight - tide.getHeight))
+    var seaLength = getPreventionWaterLevel(sea.getLength, (beach.getAbsMinHeight - sea.getHeight - tide.getHeight))
     
     var line = [
         {"x": 0, "y": cH},
-        {"x": 0, "y": cH * (beach.getBeachMinHeight - sea.getHeight)},
-        {"x": cW * seaLength, "y": cH * (beach.getBeachMinHeight - sea.getHeight)},
+        {"x": 0, "y": cH * (beach.getAbsMinHeight - sea.getHeight)},
+        {"x": cW * seaLength, "y": cH * (beach.getAbsMinHeight - sea.getHeight)},
         {"x": cW * seaLength, "y": cH},
         {"x": 0, "y": cH},
     ];
+
+    console.log(line)
 
     var lineFunction = d3.line()
         .x(function(d) { return d.x; })
@@ -453,14 +450,14 @@ function drawSideTide(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
 
-    var tideLength = getPreventionWaterLevel(tide.getLength, (beach.getBeachMinHeight - sea.getHeight - tH))
+    var tideLength = getPreventionWaterLevel(tide.getLength, (beach.getAbsMinHeight - sea.getHeight - tH))
 
     var line = [
-        {"x": 0, "y": cH * (beach.getBeachMinHeight - sea.getHeight)},
-        {"x": 0, "y": cH * (beach.getBeachMinHeight - sea.getHeight - tH)},
-        {"x": cW * tideLength, "y": cH * (beach.getBeachMinHeight - sea.getHeight - tH)},
-        {"x": cW * tideLength, "y": cH * (beach.getBeachMinHeight - sea.getHeight)},
-        {"x": 0, "y": cH * (beach.getBeachMinHeight - sea.getHeight)}
+        {"x": 0, "y": cH * (beach.getAbsMinHeight - sea.getHeight)},
+        {"x": 0, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tH)},
+        {"x": cW * tideLength, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tH)},
+        {"x": cW * tideLength, "y": cH * (beach.getAbsMinHeight - sea.getHeight)},
+        {"x": 0, "y": cH * (beach.getAbsMinHeight - sea.getHeight)}
     ];
 
     var lineFunction = d3.line()
@@ -563,9 +560,10 @@ function drawSidePreventions(canvas) {
             canvas = drawSideSeaBee(prev, canvas)
         } else if (prev.name == "seawall") {
             canvas = drawSideSeaWall(prev, canvas)
-        } else if (prev.name == "sand") {
-            canvas = drawSideSand(prev, canvas)
         }
+        // } else if (prev.name == "sand") {
+        //     canvas = drawSideSand(prev, canvas)
+        // }
     }
     return canvas;
 }
@@ -885,4 +883,4 @@ function drawAerialHouses(canvas) {
             .attr("fill", fillColour)
     }
     return canvas
-}
+} 
