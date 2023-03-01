@@ -217,18 +217,22 @@ function purchasePrevention() {
                         seaWall.calcYPos();
                         preventions.addNew(seaWall)
                     }
+                    sortPreventions()
+                    if (canvasProp.getState == 0) {
+                        canvas = drawSidePreventions(canvas)
+                        drawSideCanvas(canvas)
+                    } else {drawAerialCanvas(canvas)}
+                    e.currentTarget.removeEventListener(e.type, handler)
                 })
-                e.currentTarget.removeEventListener(e.type, handler)
             } else {
                 var sandH = (getUserPreventionHeight() / (2 * canvasProp.getRealHeight));
                 beach.setBeachMinHeight = beach.getBeachMinHeight - sandH;
                 beach.setBeachMaxHeight = beach.getBeachMaxHeight - sandH;
+                if (canvasProp.getState == 0) {
+                    canvas = drawSidePreventions(canvas)
+                    drawSideCanvas(canvas)
+                } else {drawAerialCanvas(canvas)}
             }
-            sortPreventions()
-            if (canvasProp.getState == 0) {
-                canvas = drawSidePreventions(canvas)
-                drawSideCanvas(canvas)
-            } else {drawAerialCanvas(canvas)}
         } else {
             window.alert("You do not have the budget available to make this purchase");
         }
