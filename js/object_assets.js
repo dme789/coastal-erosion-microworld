@@ -235,7 +235,7 @@ export const tide = {
         var height = sea.getHeight + this.currHeight;
         if ((beach.getAbsMinHeight - sea.getHeight - this.currHeight) >= beach.getBeachMaxHeight) {
             this.length = (height - (beach.getAbsMinHeight - beach.getBeachMinHeight)) / beach.getBeachSlope;
-        } else if ((beach.getAbsMinHeight - sea.getHeight - this.currHeight) >= (beach.getBeachMaxHeight - dune.getDuneHeight)) {
+        } else if ((beach.getAbsMinHeight - sea.getHeight - this.currHeight) >= (beach.getAbsMaxHeight - dune.getDuneHeight)) {
             var duneWaterLine = beach.getBeachMaxHeight - (beach.getBeachMinHeight - height);
             this.length = beach.getBeachWidth + (duneWaterLine/ dune.getSlope);
         } else {
