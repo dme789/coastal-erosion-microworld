@@ -196,7 +196,6 @@ function purchasePrevention() {
     var prevention = getSelectedPrevention()
     if (prevention != null) {
         var purchaseCost = parseInt((document.getElementById("purchaseAmountTot").textContent).replace(/\D/g,''));
-        console.log(purchaseCost)
         if (purchaseCost <= preventions.getBudget) {
             preventions.decreaseBudget(purchaseCost)
             document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
@@ -212,7 +211,6 @@ function purchasePrevention() {
                     } else if (prevention.id == "seawall") {
                         const seaWall = Object.create(seaWalls)
                         seaWall.setLength = clickPos + (seaWall.getWidth / 2);
-                        console.log(seaWall.getHeight)
                         seaWall.setHeight = (getUserPreventionHeight() / canvasProp.getRealHeight)
                         seaWall.calcYPos();
                         preventions.addNew(seaWall)
@@ -426,7 +424,6 @@ function drawSideSea(canvas) {
     const cW = canvasProp.getCanvasWidth
 
     var seaLength = getPreventionWaterLevel(sea.getLength, (beach.getAbsMinHeight - sea.getHeight - tide.getHeight))
-    console.log("L1 " + seaLength)
     
     var line = [
         {"x": 0, "y": cH},
@@ -772,7 +769,6 @@ function drawAerialTide(canvas) {
             {"x": cW, "y": cH * (1 - sea.getLength)},
             {"x": 0, "y": cH * (1 - sea.getLength)},
         ];
-        console.log(line)
     
         var lineFunction = d3.line()
             .x(function(d) { return d.x; })
