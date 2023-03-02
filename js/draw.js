@@ -123,7 +123,7 @@ function setSelectedTide() {
     var options = document.getElementsByName('tideSelection')
     for (var i = 0; i < options.length; i++) {
         if (options[i].checked) {
-            tide.calculateTideLength(options[i].value);
+            tide.setTidalHeight(options[i].value);
             var tH = -1;
             if (options[i].value == 1) {tH = tide.getLow}
             else if (options[i].value == 2) {tH = tide.getAverage()}
@@ -276,6 +276,7 @@ function incrementYear() {
 function decreaseBeach() {
     if (beach.getLifeSpan > 0 ) {
         beach.decreaseHeight()
+        tide.calculateTideLength();
         for(var i = 0; i < preventions.bought.length; i++) {
             var prev = preventions.bought[i]
             var minHeightAtPrev = beach.getAbsMinHeight - (prev.getLength * beach.getBeachSlope)
