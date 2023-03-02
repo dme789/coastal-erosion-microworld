@@ -149,9 +149,6 @@ export const dune = {
     },
     reCalcSlope: function() {
         this.slope = this.height / this.bankLength
-        console.log("H: " + this.height)
-        console.log("L: " + this.bankLength)
-        console.log("S: " + this.slope)
     },
     reCalculateSlope: function(decrease) {
         this.slope = (this.height + decrease) / this.bankLength;
@@ -164,7 +161,6 @@ export const dune = {
             if (this.slope < 0) {
                 erosionLength = erosionLength / 2;
             }
-            console.log("Erosion: " + erosionRate)
             this.setDuneBankLength = this.getDuneBankLength - erosionRate;
             beach.setBeachWidth = beach.getBeachWidth + erosionRate;
         }
@@ -414,6 +410,7 @@ export const house = {
     length: 0,
     xPos: 0,
     value: 0,
+    dunePos: 0.01,
 
     get getHeight() {
         return this.height;
@@ -444,6 +441,12 @@ export const house = {
     },
     set setValue(val) {
         this.value = val;
+    },
+    get getDunePos() {
+        return this.dunePos;
+    },
+    set setDunePos(val) {
+        this.dunePos = val;
     },
     createNew: function(h, w, l, x, a) {
         this.height = h;
