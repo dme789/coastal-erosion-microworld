@@ -290,9 +290,10 @@ function decreaseBeach() {
 }
 
 function calcDuneErosion() {
+    tide.setLength = getPreventionWaterLevel(tide.getLength, (beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight))
     if(preventions.bought.length > 0) {
         var furtherestPrev = preventions.bought[preventions.bought.length - 1]
-        var prevEnd = furtherestPrev.getYPos + (furtherestPrev.getWidth / 2)
+        var prevEnd = furtherestPrev.getLength + (furtherestPrev.getWidth / 2)
         console.log("Prev: " + prevEnd + ", Sea: " + sea.getLength + ", Tide: " + tide.getLength)
         if ((sea.getLength > prevEnd) || (tide.getLength > prevEnd)) {
             if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) < beach.getBeachMaxHeight) {
@@ -480,14 +481,11 @@ function drawSideTide(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
 
-    var tideLength = getPreventionWaterLevel(tide.getLength, (beach.getAbsMinHeight - sea.getHeight - tH))
-    tide.setLength = tideLength
-
     var line = [
         {"x": 0, "y": cH * (beach.getAbsMinHeight - sea.getHeight)},
-        {"x": 0, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tH)},
-        {"x": cW * tideLength, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tH)},
-        {"x": cW * tideLength, "y": cH * (beach.getAbsMinHeight - sea.getHeight)},
+        {"x": 0, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tide.currHeight)},
+        {"x": cW * tide.getLength, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight)},
+        {"x": cW * tide.getLength, "y": cH * (beach.getAbsMinHeight - sea.getHeight)},
         {"x": 0, "y": cH * (beach.getAbsMinHeight - sea.getHeight)}
     ];
 
