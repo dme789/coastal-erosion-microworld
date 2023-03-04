@@ -38,7 +38,8 @@ export const canvasProp = {
 // Beach object and relevant functions
 // Attributes in terms of % of canvas
 export const beach = {
-    width: 0.8,     
+    width: 0.8,
+    slopeWidth: 0.8,     
     minHeight: 0.65,
     maxHeight: 0.55,
     slope: 0.125,      // rise/run => min
@@ -53,6 +54,12 @@ export const beach = {
     set setBeachWidth(val) {
         this.width = val;
         this.reCalculateSlope();
+    },
+    get getSlopeWidth() {
+        return this.slopeWidth;
+    },
+    set setSlopeWidth(val) {
+        this.slopeWidth = val;
     },
     get getBeachSlope() {
         return this.slope;
@@ -132,6 +139,7 @@ export const dune = {
     },
     set setDuneBankLength(val) {
         this.bankLength = val
+        this.reCalcSlope()
     },
     get getDuneWidth() {
         return this.width
@@ -139,9 +147,24 @@ export const dune = {
     get getSlope() {
         return this.slope;
     },
+    reCalcSlope: function() {
+        this.slope = this.height / this.bankLength
+    },
     reCalculateSlope: function(decrease) {
         this.slope = (this.height + decrease) / this.bankLength;
     },
+    erode: function(erosionRate) {
+        if(this.slope <= -1) {
+            this.setDuneBankLength = 0;
+        } else if (tide.getLength > beach.getSlopeWidth) {
+            var erosionLength = (tide.getLength - beach.getBeachWidth);
+            if (this.slope < 0) {
+                erosionLength = erosionLength / 2;
+            }
+            this.setDuneBankLength = this.getDuneBankLength - erosionRate;
+            beach.setBeachWidth = beach.getBeachWidth + erosionRate;
+        }
+    }
 };
 
 export const sea = {
@@ -387,6 +410,7 @@ export const house = {
     length: 0,
     xPos: 0,
     value: 0,
+    dunePos: 0.01,
 
     get getHeight() {
         return this.height;
@@ -417,6 +441,12 @@ export const house = {
     },
     set setValue(val) {
         this.value = val;
+    },
+    get getDunePos() {
+        return this.dunePos;
+    },
+    set setDunePos(val) {
+        this.dunePos = val;
     },
     createNew: function(h, w, l, x, a) {
         this.height = h;
