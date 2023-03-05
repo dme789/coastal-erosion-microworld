@@ -544,11 +544,13 @@ function drawSideTide(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
 
+    var tideLength = getPreventionWaterLevel(tide.getLength, (beach.getAbsMinHeight - sea.getHeight - tide.getHeight))
+
     var line = [
         {"x": 0, "y": cH * (beach.getAbsMinHeight - sea.getHeight)},
         {"x": 0, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tide.currHeight)},
-        {"x": cW * tide.getLength, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight)},
-        {"x": cW * tide.getLength, "y": cH * (beach.getAbsMinHeight - sea.getHeight)},
+        {"x": cW * tideLength, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight)},
+        {"x": cW * tideLength, "y": cH * (beach.getAbsMinHeight - sea.getHeight)},
         {"x": 0, "y": cH * (beach.getAbsMinHeight - sea.getHeight)}
     ];
 
@@ -809,7 +811,7 @@ function drawAerialSea(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
 
-    var seaLength = getPreventionWaterLevel(sea.getLength, (beach.getBeachMinHeight - sea.getHeight - tide.getHeight))
+    var seaLength = getPreventionWaterLevel(sea.getLength, (beach.getAbsMinHeight - sea.getHeight - tide.getHeight))
 
     var line = [
         {"x": 0, "y": cH},
@@ -843,7 +845,7 @@ function drawAerialTide(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
 
-    var tideLength = getPreventionWaterLevel(tide.getLength, (beach.getBeachMinHeight - sea.getHeight - tide.getHeight))
+    var tideLength = getPreventionWaterLevel(tide.getLength, (beach.getAbsMinHeight - sea.getHeight - tide.getHeight))
 
     if (tideLength > sea.getLength) {
         var line = [
@@ -939,11 +941,11 @@ function drawAerialHouses(canvas) {
         const tempHouse = housesArr.getHouses[i]
         if (i >= 10) {distRow = 0.1; fillColour = "#a9886e"}
         var line = [
-            {"x": cW * tempHouse.getXPos, "y": cH * (dune.getDuneWidth - dune.getDuneBankLength - distRow)},
-            {"x": cW * tempHouse.getXPos, "y": cH * (dune.getDuneWidth - dune.getDuneBankLength - tempHouse.getWidth - distRow)},
-            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (dune.getDuneWidth - dune.getDuneBankLength - tempHouse.getWidth - distRow)},
-            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (dune.getDuneWidth - dune.getDuneBankLength - distRow)},
-            {"x": cW * tempHouse.getXPos, "y": cH * (dune.getDuneWidth - dune.getDuneBankLength - distRow)}
+            {"x": cW * tempHouse.getXPos, "y": cH * (1 - beach.getSlopeWidth - tempHouse.getDunePos - distRow)},
+            {"x": cW * tempHouse.getXPos, "y": cH * (1 - beach.getSlopeWidth - tempHouse.getDunePos - distRow - tempHouse.getWidth)},
+            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (1 - beach.getSlopeWidth - tempHouse.getDunePos - distRow - tempHouse.getWidth)},
+            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (1 - beach.getSlopeWidth - tempHouse.getDunePos - distRow)},
+            {"x": cW * tempHouse.getXPos, "y": cH * (1 - beach.getSlopeWidth - tempHouse.getDunePos - distRow)}
         ];
     
         var lineFunction = d3.line()
