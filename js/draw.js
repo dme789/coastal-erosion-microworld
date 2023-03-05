@@ -1,8 +1,8 @@
 import {canvasProp, beach, dune, sea, tide, maxWave, preventions, seaBees, housesArr, house, seaWalls} from './object_assets.js';
 
 // Gets the client's (user) canvas dimensions to set within our canvasProp
-canvasProp.setCanvasHeight = document.getElementById('canvasPlaceHolder').getBoundingClientRect().height;
-canvasProp.setCanvasWidth = document.getElementById('canvasPlaceHolder').getBoundingClientRect().width;
+canvasProp.setCanvasHeight = document.getElementById('canvas').getBoundingClientRect().height;
+canvasProp.setCanvasWidth = document.getElementById('canvas').getBoundingClientRect().width;
 
 
 // Setups up initial canvas as svg to draw on.
@@ -27,7 +27,7 @@ for (var i = 0; i < 10; i++) {
 }
 
 drawSideCanvas(canvas)
-document.getElementById("currYear").innerHTML = 2023;
+document.getElementById("currYear").innerHTML = 0;
 document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
 document.getElementById("purchaseAmountTot").innerHTML = 0;
 
@@ -47,6 +47,7 @@ function drawSideCanvas(canvas) {
     canvas = drawSideBeach(canvas)
     canvas = drawSideDune(canvas)
     canvas = drawSideHouse(canvas)
+    canvas = drawBorder(canvas)
     return canvas
 }
 
@@ -62,6 +63,7 @@ function drawAerialCanvas(canvas) {
     if (tideOption != 1) { canvas = drawAerialTide(canvas);}
     canvas = drawAerialPreventions(canvas)
     canvas = drawAerialHouses(canvas)
+    canvas = drawBorder(canvas)
     return canvas
 }
 
@@ -76,11 +78,37 @@ function drawBackground(canvas) {
     return canvas
 }
 
+function drawBorder(canvas) {
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+    var line = [
+        {"x": 0, "y": 0},
+        {"x": cW, "y": 0},
+        {"x": cW, "y": cH},
+        {"x": 0, "y": cH},
+        {"x": 0, "y": 0}
+    ];
+    
+    var lineFunction = d3.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; });
+    
+    canvas.append("path")
+        .attr("d", lineFunction(line))
+        .attr("stroke", "black")
+        .attr("stroke-width", 0.5)
+        .attr("fill", "black")
+        .attr("fill-opacity", "0%");
+
+    return canvas
+}
+
 // *************************** User Input Change Functions **********************************
 
 const sideViewOption = document.getElementById('sideViewButton');
 sideViewOption.addEventListener('click', reDrawSideCanvas);
 function reDrawSideCanvas() {
+    document.getElementById("aerialViewButton").classList.remove("active")
     canvasProp.setState = 0
     drawSideCanvas(canvas)
 }
@@ -88,6 +116,7 @@ function reDrawSideCanvas() {
 const aerialViewOption = document.getElementById('aerialViewButton');
 aerialViewOption.addEventListener('click', reDrawAerialCanvas);
 function reDrawAerialCanvas() {
+    document.getElementById("sideViewButton").classList.remove("active")
     canvasProp.setState = 1
     drawAerialCanvas(canvas)
 }
@@ -152,14 +181,14 @@ sandSelected.addEventListener("change", function() {
     }
 })
 
-const buyHousesSelected = document.getElementById('buyHouses');
-buyHousesSelected.addEventListener("change", function() {
-    if (buyHousesSelected.checked) {
-        buyHousesInstructions.style.display = "block";
-    } else {
-        buyHousesInstructions.style.display = "none";
-    }
-})
+// const buyHousesSelected = document.getElementById('buyHouses');
+// buyHousesSelected.addEventListener("change", function() {
+//     if (buyHousesSelected.checked) {
+//         buyHousesInstructions.style.display = "block";
+//     } else {
+//         buyHousesInstructions.style.display = "none";
+//     }
+// })
 
 var preventionSelected = document.getElementsByName("preventionBought");
 for (var i = 0; i < preventionSelected.length; i++) {
@@ -270,7 +299,7 @@ function incrementYear() {
     document.getElementById("timeSlider").value = canvasProp.getYear;
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
     else {drawAerialCanvas(canvas)}
-    document.getElementById("currYear").innerHTML = (2023 + canvasProp.getYear);
+    document.getElementById("currYear").innerHTML = canvasProp.getYear;
     document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
 }
 
@@ -395,16 +424,16 @@ function drawSideBeach(canvas) {
     
     canvas.append("path")
         .attr("d", lineFunction(line))
-        .attr("stroke", "black")
-        .attr("stroke-width", 0.5)
+        // .attr("stroke", "black")
+        // .attr("stroke-width", 0.5)
         .attr("fill", "#FAFAD2");
 
-    canvas.append("text")
-        .attr("x", canvasProp.getCanvasWidth * 0.5)
-        .attr("y", canvasProp.getCanvasHeight * 0.8)
-        .attr("text-anchor", "middle")
-        .style("font-size", "24px")
-        .text("Beach");
+    // canvas.append("text")
+    //     .attr("x", canvasProp.getCanvasWidth * 0.5)
+    //     .attr("y", canvasProp.getCanvasHeight * 0.8)
+    //     .attr("text-anchor", "middle")
+    //     .style("font-size", "24px")
+    //     .text("Beach");
     
     return canvas
 }
@@ -428,16 +457,16 @@ function drawSideDune(canvas) {
     
     canvas.append("path")
         .attr("d", lineFunction(line))
-        .attr("stroke", "black")
-        .attr("stroke-width", 0.5)
+        // .attr("stroke", "black")
+        // .attr("stroke-width", 0.5)
         .attr("fill", "#FAFAD2");
 
-    canvas.append("text")
-        .attr("x", canvasProp.getCanvasWidth * 0.9)
-        .attr("y", canvasProp.getCanvasHeight * 0.8)
-        .attr("text-anchor", "middle")
-        .style("font-size", "24px")
-        .text("Dune");
+    // canvas.append("text")
+    //     .attr("x", canvasProp.getCanvasWidth * 0.9)
+    //     .attr("y", canvasProp.getCanvasHeight * 0.8)
+    //     .attr("text-anchor", "middle")
+    //     .style("font-size", "24px")
+    //     .text("Dune");
     
     return canvas
 }
@@ -462,16 +491,16 @@ function drawSideSea(canvas) {
     
     canvas.append("path")
         .attr("d", lineFunction(line))
-        .attr("fill", "#79B9E1")
+        .attr("fill", "#87CEFA")
     
-    if (sea.getHeight > 0 || sea.getLength > 0) {
-        canvas.append("text")
-            .attr("x", 20)
-            .attr("y", ((cH * beach.getBeachMinHeight)) - 5)
-            .attr("text-anchor", "middle")
-            .style("font-size", "20px")
-            .text("Sea");
-    }    
+    // if (sea.getHeight > 0 || sea.getLength > 0) {
+    //     canvas.append("text")
+    //         .attr("x", 20)
+    //         .attr("y", ((cH * beach.getBeachMinHeight)) - 5)
+    //         .attr("text-anchor", "middle")
+    //         .style("font-size", "20px")
+    //         .text("Sea");
+    // }    
 
     return canvas
 }
@@ -497,15 +526,15 @@ function drawSideTide(canvas) {
         .attr("d", lineFunction(line))
         .attr("fill", "#87CEFA")
     
-    if (tH != 0) {
-        canvas.append("text")
-            .attr("x", 50)
-            .attr("y", (cH * (beach.getBeachMinHeight - sea.getHeight)) - 5)
-            .attr("text-anchor", "middle")
-            .style("font-size", "20px")
-            .text("Tide");
+    // if (tH != 0) {
+    //     canvas.append("text")
+    //         .attr("x", 50)
+    //         .attr("y", (cH * (beach.getBeachMinHeight - sea.getHeight)) - 5)
+    //         .attr("text-anchor", "middle")
+    //         .style("font-size", "20px")
+    //         .text("Tide");
 
-    }
+    // }
 
     return canvas
 }
@@ -703,16 +732,16 @@ function drawAerialBeach(canvas) {
     
     canvas.append("path")
         .attr("d", lineFunction(line))
-        .attr("stroke", "black")
-        .attr("stroke-width", 0.5)
+        // .attr("stroke", "black")
+        // .attr("stroke-width", 0.5)
         .attr("fill", "#FAFAD2");
 
-    canvas.append("text")
-        .attr("x", canvasProp.getCanvasWidth * 0.475)
-        .attr("y", canvasProp.getCanvasHeight * 0.5)
-        .attr("text-anchor", "middle")
-        .style("font-size", "24px")
-        .text("Beach");
+    // canvas.append("text")
+    //     .attr("x", canvasProp.getCanvasWidth * 0.475)
+    //     .attr("y", canvasProp.getCanvasHeight * 0.5)
+    //     .attr("text-anchor", "middle")
+    //     .style("font-size", "24px")
+    //     .text("Beach");
     
     return canvas
 }
@@ -735,8 +764,8 @@ function drawAerialDune(canvas) {
     
     canvas.append("path")
         .attr("d", lineFunction(line))
-        .attr("stroke", "black")
-        .attr("stroke-width", 0.5)
+        // .attr("stroke", "black")
+        // .attr("stroke-width", 0.5)
         .attr("fill", "#FAFAD2");
     
     return canvas
@@ -762,16 +791,16 @@ function drawAerialSea(canvas) {
     
     canvas.append("path")
         .attr("d", lineFunction(line))
-        .attr("fill", "#79B9E1")
+        .attr("fill", "#87CEFA")
     
-    if (sea.getHeight > 0 || sea.getLength > 0) {
-        canvas.append("text")
-            .attr("x", canvasProp.getCanvasWidth * 0.475)
-            .attr("y", canvasProp.getCanvasHeight * 0.9)
-            .attr("text-anchor", "middle")
-            .style("font-size", "24px")
-            .text("Sea");
-    }
+    // if (sea.getHeight > 0 || sea.getLength > 0) {
+    //     canvas.append("text")
+    //         .attr("x", canvasProp.getCanvasWidth * 0.475)
+    //         .attr("y", canvasProp.getCanvasHeight * 0.9)
+    //         .attr("text-anchor", "middle")
+    //         .style("font-size", "24px")
+    //         .text("Sea");
+    // }
 
     return canvas
 }
@@ -799,14 +828,14 @@ function drawAerialTide(canvas) {
             .attr("d", lineFunction(line))
             .attr("fill", "#87CEFA")
         
-        if (tide.getHeight != 0) {
-            canvas.append("text")
-                .attr("x", cW * 0.475)
-                .attr("y", cH * (1 - sea.getLength) - 10)
-                .attr("text-anchor", "middle")
-                .style("font-size", "24px")
-                .text("Tide");
-        }
+        // if (tide.getHeight != 0) {
+        //     canvas.append("text")
+        //         .attr("x", cW * 0.475)
+        //         .attr("y", cH * (1 - sea.getLength) - 10)
+        //         .attr("text-anchor", "middle")
+        //         .style("font-size", "24px")
+        //         .text("Tide");
+        // }
     }
 
     return canvas

@@ -47,8 +47,8 @@
             <div class="col-2"></div>
             <div class="col-8">
                 <form>
-                    <button type="button" id="sideViewButton">Side View</button>
-                    <button type="button" id="aerialViewButton">Aerial View</button>
+                    <button type="button" class="btn btn-primary active" id="sideViewButton" data-bs-toggle="button" autocomplete="off" aria-pressed="true">Side View</button>
+                    <button type="button" class="btn btn-primary" id="aerialViewButton" data-bs-toggle="button" autocomplete="off">Aerial View</button>
                 </form>
             </div>
             <div class="col-2"></div>
@@ -58,75 +58,88 @@
     <div class="container-fluid text-center">
         <div class="row">
             <div class="col-2">
-                <div>
-                    <label for="seaRiseSlider">Sea Rise</label>
-                    <input type="range" min="1" max="5" value="1" class="seaRiseSlider" id="seaRiseSlider">
-                </div>
-                <div>
-                    <label for="maxWaveHeightSlider">Max Wave Height</label>
-                    <input type="range" min="6" max="9" value="6" class="maxWaveHeightSlider" id="maxWaveHeightSlider">
-                </div>
-                <div>
-                    <form>
-                        <p>Tide Selection</p>
-                        <input type="radio" id="lowTide" name="tideSelection" value="1">
-                        <label for="lowTide">Low</label><br>
-                        <input type="radio" id="averageTide" name="tideSelection" value="2" checked="checked">
-                        <label for="averageTide">Average</label><br>
-                        <input type="radio" id="highTide" name="tideSelection" value="3">
-                        <label for="highTide">High</label>
-                    </form>
+                <div class="card control-panel border rounded-3">
+                    <h4 class="card-title">Weather Variables</h4>
+                    <div class="control-option">
+                        <h6>Sea Rise</h6>
+                        <div class="range">
+                            <div class="field">
+                                <div class="value left">1</div>
+                                <input type="range" min="1" max="5" value="1" class="seaRiseSlider" id="seaRiseSlider">
+                                <div class="value right">5</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-option">
+                        <h6>Max Wave Height</h6>
+                        <div class="range">
+                            <div class="field">
+                                <div class="value left">6</div>
+                                <input type="range" min="6" max="9" value="6" class="maxWaveHeightSlider" id="maxWaveHeightSlider">
+                                <div class="value right">9</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-option">
+                        <h6>Tide Selection</h6>
+                        <form id="radioOptions">
+                            <input type="radio" id="lowTide" name="tideSelection" value="1">
+                            <label for="lowTide">Low</label><br>
+                            <input type="radio" id="averageTide" name="tideSelection" value="2" checked="checked">
+                            <label for="averageTide">Average</label><br>
+                            <input type="radio" id="highTide" name="tideSelection" value="3">
+                            <label for="highTide">High</label>
+                        </form>
+                    </div>
                 </div>
             </div>
             <div id="canvasPlaceHolder" class="col-8">
                 <div class ="canvas" id="canvas"></div>
+                <div class="row control-panel border rounded-3" id="timeControls">
+                    <div class="col-3">
+                        <h5>Current Year: <span id="currYear"></span></h5>
+                    </div>
+                    <div class="col-2 offset-1">
+                        <button type="button" class="btn btn-danger" id="playButton">Skip 5 Years</button>
+                    </div>
+                    <div class="col-6">
+                        <label for="timeSlider">Time</label>
+                        <input type="range" min="0" max="50" value="0" class="timeSlider" id="timeSlider">
+                    </div>
+                </div>
             </div>
             <div class="col-2">
-                <span>Budget Remaining: €</span>
-                <span id="budgetRem"></span>
-                <form>
-                    <p>Prevention Options</p>
-                    <input type="radio" id="seabees" name="preventionBought" value="15000">
-                    <label for="seabees">Seabees</label><br>
-                    <input type="radio" id="seawall" name="preventionBought" value="25000">
-                    <label for="seawall">Sea Wall</label><br>
-                    <input type="radio" id="sand" name="preventionBought" value="50000">
-                    <label for="sand">Sand</label><br>
-                    <input type="radio" id="buyHouses" name="preventionBought" value="">
-                    <label for="buyHouses">Buy Houses</label><br>
+                <div class="card control-panel border rounded-3">
+                    <h4 class="card-title">Budget Choices</h4>
+                    <span id="budgetBal">Budget Balance: <b>€<span id="budgetRem"></span></b></span>
+                    <h6>Prevention Options:</h6>
+                    <form id="radioOptions">
+                        <input type="radio" id="seabees" name="preventionBought" value="15000">
+                        <label for="seabees">Seabees</label><br>
+                        <input type="radio" id="seawall" name="preventionBought" value="25000">
+                        <label for="seawall">Sea Wall</label><br>
+                        <input type="radio" id="sand" name="preventionBought" value="50000">
+                        <label for="sand">Sand</label><br>
+                        <!-- <input type="radio" id="buyHouses" name="preventionBought" value="">
+                        <label for="buyHouses">Buy Houses</label><br> -->
+                    </form>
                     <div id="dropdownH" style="display:none;">
                         <p><b>Select a height:</b></p>
                         <select id="preventionHeightOptions">
-                          <option value="1" selected>1m</option>
-                          <option value="2">2m</option>
-                          <option value="3">3m</option>
+                        <option value="1" selected>1m</option>
+                        <option value="2">2m</option>
+                        <option value="3">3m</option>
                         </select>
                     </div>
                     <div id="buyHousesInstructions" style="display:none">
                         <p>Click on which houses you would like to buy and the amount will up as houses are added</p>
                     </div>
                     <div id="purchaseAmount">
-                        <span>Cost of Purchase: €</span>
-                        <span id="purchaseAmountTot"></span>
+                        <span>Cost of Purchase: €<span id="purchaseAmountTot"></span></span>
                     </div>
-                    <button type="button" id="confirmedPurchase">Confirm Purchase</button>
-                </form> 
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-1"></div>
-            <div class="col-2">
-                <button type="button" id="playButton">Skip 5 Years</button>
-            </div>
-            <div class="col-2">
-                <span>Current Year: </span>
-                <span id="currYear"></span>
-            </div>
-            <div class="col-6">
-                <label for="timeSlider">Time</label>
-                <input type="range" min="0" max="50" value="0" class="timeSlider" id="timeSlider">
-            </div>
-            <div class="col-1"></div>
+                    <button type="button" class="btn btn-success" id="confirmedPurchase">Confirm Purchase</button>
+                </div> 
+            </div>    
         </div>
     </div>
 
