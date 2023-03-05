@@ -3,8 +3,11 @@ export const canvasProp = {
     height: 0,
     width: 0,
     realHeight: 15,
+    realWidth: 1000,
+    realLength: 50,
     state: 0,       // 0 = side view, 1 = aerial view
     year: 0,
+    dimensions: 0,
 
     get getCanvasHeight() {
         return this.height;
@@ -21,6 +24,12 @@ export const canvasProp = {
     get getRealHeight() {
         return this.realHeight;
     },
+    get getRealWidth() {
+        return this.realWidth;
+    },
+    get getRealLength() {
+        return this.realLength;
+    },
     get getState() {
         return this.state;
     },
@@ -29,6 +38,12 @@ export const canvasProp = {
     },
     get getYear() {
         return this.year;
+    },
+    get getStateDim() {
+        return this.dimensions;
+    },
+    set setStateDim(val) {
+        this.dimensions = val;
     },
     incrementYear: function() {
         this.year = this.year + 1;

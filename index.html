@@ -43,9 +43,11 @@
             </div>
             <div class="col-2"></div>
         </div>
+    </div>
+
+    <div class="container-fluid text-center">
         <div class="row">
-            <div class="col-2"></div>
-            <div class="col-8">
+            <div class="col-4 offset-4">
                 <form>
                     <button type="button" class="btn btn-primary active" id="sideViewButton" data-bs-toggle="button" autocomplete="off" aria-pressed="true">Side View</button>
                     <button type="button" class="btn btn-primary" id="aerialViewButton" data-bs-toggle="button" autocomplete="off">Aerial View</button>
@@ -53,9 +55,7 @@
             </div>
             <div class="col-2"></div>
         </div>
-    </div>
 
-    <div class="container-fluid text-center">
         <div class="row">
             <div class="col-2">
                 <div class="card control-panel border rounded-3">
@@ -91,6 +91,10 @@
                             <label for="highTide">High</label>
                         </form>
                     </div>
+                </div>
+
+                <div id="sHDimensions">
+                    <button type="button" class="btn btn-primary active" id="sHDimensionsB">Show Dimensions</button>
                 </div>
             </div>
             <div id="canvasPlaceHolder" class="col-8">

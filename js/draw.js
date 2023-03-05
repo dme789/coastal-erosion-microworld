@@ -48,6 +48,7 @@ function drawSideCanvas(canvas) {
     canvas = drawSideDune(canvas)
     canvas = drawSideHouse(canvas)
     canvas = drawBorder(canvas)
+    if (canvasProp.getStateDim == 1) {canvas = drawRealDimLabels(canvas, canvasProp.getRealLength, canvasProp.getRealHeight)}
     return canvas
 }
 
@@ -64,6 +65,7 @@ function drawAerialCanvas(canvas) {
     canvas = drawAerialPreventions(canvas)
     canvas = drawAerialHouses(canvas)
     canvas = drawBorder(canvas)
+    if (canvasProp.getStateDim == 1) {canvas = drawRealDimLabels(canvas, canvasProp.getRealWidth, canvasProp.getRealLength)}
     return canvas
 }
 
@@ -119,6 +121,19 @@ function reDrawAerialCanvas() {
     document.getElementById("sideViewButton").classList.remove("active")
     canvasProp.setState = 1
     drawAerialCanvas(canvas)
+}
+
+const dimensionsOption = document.getElementById('sHDimensionsB');
+dimensionsOption.addEventListener('click', userDimensions);
+function userDimensions() {
+    if (canvasProp.getStateDim == 0) {
+        canvasProp.setStateDim = 1
+        document.getElementById("sHDimensionsB").innerHTML = "Hide Dimensions";
+    } else {
+        canvasProp.setStateDim = 0
+        document.getElementById("sHDimensionsB").innerHTML = "Show Dimensions";
+    }
+    if (canvasProp.getState == 0) {drawSideCanvas(canvas)} else {drawAerialCanvas(canvas)}
 }
 
 var timeSlider = d3.select("#timeSlider");
@@ -400,7 +415,26 @@ function getUserPreventionHeight() {
     var dropdown = document.getElementById("preventionHeightOptions");
     var selectedValue = dropdown.options[dropdown.selectedIndex].value;
     return selectedValue;
-  }
+}
+
+function drawRealDimLabels(canvas, xLabel, yLabel) {
+    
+    canvas.append("text")
+        .attr("x", canvasProp.getCanvasWidth * 0.5)
+        .attr("y", canvasProp.getCanvasHeight * 0.98)
+        .attr("text-anchor", "middle")
+        .style("font-size", "20px")
+        .text(xLabel.toLocaleString() + " metres");
+
+    canvas.append("text")
+        .attr("x", 0)
+        .attr("y", canvasProp.getCanvasHeight * 0.5)
+        .attr("text-anchor", "left")
+        .style("font-size", "20px")
+        .text(yLabel.toLocaleString() + " metres");
+
+    return canvas
+}
 
 
 // *************************** Side View Draw Functions **********************************
