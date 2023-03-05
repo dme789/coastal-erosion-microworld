@@ -214,10 +214,11 @@ for (var i = 0; i < preventionSelected.length; i++) {
         } else if(sandSelected.checked) {
             dropdownH.style.display = "block"
             buyHousesInstructions.style.display = "none";
-        } else if(buyHousesSelected.checked) {
-            dropdownH.style.display = "none"
-            buyHousesInstructions.style.display = "block";
-        }
+        } 
+        // else if(buyHousesSelected.checked) {
+        //     dropdownH.style.display = "none"
+        //     buyHousesInstructions.style.display = "block";
+        // }
         else {
             dropdownH.style.display = "none"
             buyHousesInstructions.style.display = "none";
