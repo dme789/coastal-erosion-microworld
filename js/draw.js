@@ -310,6 +310,7 @@ function incrementYear() {
     canvasProp.incrementYear()
     sea.increaseSeaRise(seaRise / 100);    // meters to cm
     preventions.increaseBudget(1000);
+    checkHouseFalling()
     decreaseBeach()
     calcDuneErosion()
     document.getElementById("timeSlider").value = canvasProp.getYear;
@@ -435,6 +436,21 @@ function drawRealDimLabels(canvas, xLabel, yLabel) {
         .text(yLabel.toLocaleString() + " metres");
 
     return canvas
+}
+
+function checkHouseFalling() {
+    var distRow = 0;
+    for(var i = 0; i < 2; i++) {
+        if (i > 0) {distRow = 0.13;}
+        const tempHouse = housesArr.getHouses[i * 8]
+        if ( tide.getLength > (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + tempHouse.getWidth)) {
+            for(var j = i; j < ((1 + i) * 8); j++) {
+                const tHouse = housesArr.getHouses[j]
+                tHouse.setStatus = true;
+                tHouse.setHeight = 0.05;
+            }
+        }
+    }
 }
 
 
@@ -717,15 +733,25 @@ function drawSideHouse(canvas) {
     var distRow = 0;
     var fillColour = "#946b4b"
     for(var i = 0; i < 2; i ++) {
-        const tempHouse = housesArr.getHouses[i * 10]
+        const tempHouse = housesArr.getHouses[i * 8]
         if (i > 0) {distRow = 0.13; fillColour = "#a9886e"}
-        var line = [
-            {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
-            {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
-            {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + tempHouse.getWidth), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
-            {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + tempHouse.getWidth), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
-            {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)}
-        ];
+        var line = []
+        if(tempHouse.getStatus == false) {
+            line = [
+                {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
+                {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
+                {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + tempHouse.getWidth), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
+                {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + tempHouse.getWidth), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
+                {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)}
+            ];
+        } else {
+            line = [
+                {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight)},
+                {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + (tempHouse.getWidth/2)), "y": cH * (beach.getAbsMaxHeight - tempHouse.getHeight)},
+                {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + tempHouse.getWidth), "y": cH * (beach.getAbsMaxHeight)},
+                {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight)}
+            ];
+        }
         
         var lineFunction = d3.line()
             .x(function(d) { return d.x; })

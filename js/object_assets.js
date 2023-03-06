@@ -430,6 +430,7 @@ export const house = {
     xPos: 0,
     value: 0,
     dunePos: 0.03,
+    fallen: false,
 
     get getHeight() {
         return this.height;
@@ -466,6 +467,12 @@ export const house = {
     },
     set setDunePos(val) {
         this.dunePos = val;
+    },
+    get getStatus() {
+        return this.fallen;
+    },
+    set setStatus(val) {
+        this.fallen = val;
     },
     createNew: function(h, w, l, x, a) {
         this.height = h;
