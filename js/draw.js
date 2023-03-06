@@ -39,6 +39,7 @@ function drawSideCanvas(canvas) {
     canvas.selectAll("*").remove();
     console.log("Drawing the Side")
     var tideOption = setSelectedTide();
+    setSelectWaveHeight()
     canvas = drawBackground(canvas)
     canvas = drawSideSea(canvas)
     canvas = drawSideMaxWave(canvas)
@@ -57,6 +58,7 @@ function drawAerialCanvas(canvas) {
     canvas.selectAll("*").remove();
     console.log("Drawing the aerial")
     var tideOption = setSelectedTide();
+    setSelectWaveHeight()
     canvas = drawBackground(canvas)
     canvas = drawAerialBeach(canvas)
     canvas = drawAerialDune(canvas)
@@ -176,6 +178,10 @@ function setSelectedTide() {
             return options[i].value;
         }
     }
+}
+
+function setSelectWaveHeight() {
+    maxWave.setHeight = document.getElementById('maxWaveHeightSlider').value
 }
 
 const seaWallSelected = document.getElementById('seawall');
@@ -309,7 +315,7 @@ function incrementYear() {
     var seaRise = document.getElementById("seaRiseSlider").value;
     canvasProp.incrementYear()
     sea.increaseSeaRise(seaRise / 100);    // meters to cm
-    preventions.increaseBudget(1000);
+    preventions.increaseBudget(10000);
     checkHouseFalling()
     decreaseBeach()
     calcDuneErosion()

@@ -300,7 +300,7 @@ export const maxWave = {
 }
 
 export const preventions = {
-    budget: 500000,
+    budget: 200000,
     bought: [],
 
     get getBudget() {
