@@ -14,15 +14,15 @@ var canvas = d3.select("#canvas")
 
 // Creating predefined houses - first row
 var j = 0.01
-for (var i = 0; i < 10; i++) {
+for (var i = 0; i < 8; i++) {
     const houseT = Object.create(house)
-    houseT.createNew(0.1, 0.05, 0.08, ((i * 0.1) + j), 50000)
+    houseT.createNew(0.33, 0.07, 0.09, ((i * 0.13) + j), 50000)
     housesArr.getHouses.push(houseT)
 }
 // Creating predefined houses - second row
-for (var i = 0; i < 10; i++) {
+for (var i = 0; i < 8; i++) {
     const houseT = Object.create(house)
-    houseT.createNew(0.1, 0.05, 0.08, ((i * 0.1) + j), 40000)
+    houseT.createNew(0.33, 0.07, 0.09, ((i * 0.13) + j), 40000)
     housesArr.getHouses.push(houseT)
 }
 
@@ -718,13 +718,13 @@ function drawSideHouse(canvas) {
     var fillColour = "#946b4b"
     for(var i = 0; i < 2; i ++) {
         const tempHouse = housesArr.getHouses[i * 10]
-        if (i > 0) {distRow = 0.1; fillColour = "#a9886e"}
+        if (i > 0) {distRow = 0.13; fillColour = "#a9886e"}
         var line = [
-            {"x": cW * (beach.getSlopeWidth + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
-            {"x": cW * (beach.getSlopeWidth + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
-            {"x": cW * (beach.getSlopeWidth + tempHouse.getDunePos + distRow + tempHouse.getWidth), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
-            {"x": cW * (beach.getSlopeWidth + tempHouse.getDunePos + distRow + tempHouse.getWidth), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
-            {"x": cW * (beach.getSlopeWidth + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)}
+            {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
+            {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
+            {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + tempHouse.getWidth), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
+            {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + tempHouse.getWidth), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
+            {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)}
         ];
         
         var lineFunction = d3.line()
@@ -757,8 +757,8 @@ function drawAerialBeach(canvas) {
     const cW = canvasProp.getCanvasWidth
     var line = [
         {"x": 0, "y": cH},
-        {"x": 0, "y": cH * (1 - beach.getSlopeWidth)},
-        {"x": cW, "y": cH * (1 - beach.getSlopeWidth)},
+        {"x": 0, "y": cH * (1 - beach.getBeachWidth)},
+        {"x": cW, "y": cH * (1 - beach.getBeachWidth)},
         {"x": cW, "y": cH},
         {"x": 0, "y": cH}
     ];
@@ -788,11 +788,11 @@ function drawAerialDune(canvas) {
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
     var line = [
-        {"x": 0, "y": cH * dune.getDuneWidth},
+        {"x": 0, "y": cH * (dune.getDuneBankLength + dune.getDuneWidth)},
         {"x": 0, "y": 0},
         {"x": cW, "y": 0},
-        {"x": cW, "y": cH * dune.getDuneWidth},
-        {"x": 0, "y": cH * dune.getDuneWidth}
+        {"x": cW, "y": cH * (dune.getDuneBankLength + dune.getDuneWidth)},
+        {"x": 0, "y": cH * (dune.getDuneBankLength + dune.getDuneWidth)}
     ];
     
     var lineFunction = d3.line()
@@ -940,13 +940,13 @@ function drawAerialHouses(canvas) {
     var fillColour = "#946b4b"
     for (var i = 0; i < housesArr.getHouses.length; i++) {
         const tempHouse = housesArr.getHouses[i]
-        if (i >= 10) {distRow = 0.1; fillColour = "#a9886e"}
+        if (i >= 8) {distRow = 0.13; fillColour = "#a9886e"}
         var line = [
-            {"x": cW * tempHouse.getXPos, "y": cH * (1 - beach.getSlopeWidth - tempHouse.getDunePos - distRow)},
-            {"x": cW * tempHouse.getXPos, "y": cH * (1 - beach.getSlopeWidth - tempHouse.getDunePos - distRow - tempHouse.getWidth)},
-            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (1 - beach.getSlopeWidth - tempHouse.getDunePos - distRow - tempHouse.getWidth)},
-            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (1 - beach.getSlopeWidth - tempHouse.getDunePos - distRow)},
-            {"x": cW * tempHouse.getXPos, "y": cH * (1 - beach.getSlopeWidth - tempHouse.getDunePos - distRow)}
+            {"x": cW * tempHouse.getXPos, "y": cH * (1 - beach.getSlopeWidth - dune.absBankLength - tempHouse.getDunePos - distRow)},
+            {"x": cW * tempHouse.getXPos, "y": cH * (1 - beach.getSlopeWidth - dune.absBankLength - tempHouse.getDunePos - distRow - tempHouse.getWidth)},
+            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (1 - beach.getSlopeWidth - dune.absBankLength - tempHouse.getDunePos - distRow - tempHouse.getWidth)},
+            {"x": cW * (tempHouse.getXPos + tempHouse.getLength), "y": cH * (1 - beach.getSlopeWidth - dune.absBankLength - tempHouse.getDunePos - distRow)},
+            {"x": cW * tempHouse.getXPos, "y": cH * (1 - beach.getSlopeWidth - dune.absBankLength - tempHouse.getDunePos - distRow)}
         ];
     
         var lineFunction = d3.line()

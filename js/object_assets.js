@@ -4,7 +4,7 @@ export const canvasProp = {
     width: 0,
     realHeight: 15,
     realWidth: 1000,
-    realLength: 50,
+    realLength: 100,
     state: 0,       // 0 = side view, 1 = aerial view
     year: 0,
     dimensions: 0,
@@ -53,13 +53,13 @@ export const canvasProp = {
 // Beach object and relevant functions
 // Attributes in terms of % of canvas
 export const beach = {
-    width: 0.8,
-    slopeWidth: 0.8,     
-    minHeight: 0.65,
-    maxHeight: 0.55,
-    slope: 0.125,      // rise/run => min
-    absMinHeight: 0.65,
-    absMaxHeight: 0.55,
+    width: 0.7,
+    slopeWidth: 0.7,     
+    minHeight: 0.85,
+    maxHeight: 0.65,
+    slope: 0.28571,      // rise/run => min
+    absMinHeight: 0.85,
+    absMaxHeight: 0.65,
     lifeSpan: 0,
     heightDecreaseRate: 0,
 
@@ -139,8 +139,9 @@ export const beach = {
 // Attributes in terms of % of canvas
 export const dune = {
     height: 0.15,
-    bankLength: 0.01,
-    width: 1 - beach.getBeachWidth,
+    bankLength: 0.05,
+    absBankLength: 0.05,
+    width: 0.25,
     slope: 15,
 
     get getDuneHeight() {
@@ -155,6 +156,9 @@ export const dune = {
     set setDuneBankLength(val) {
         this.bankLength = val
         this.reCalcSlope()
+    },
+    get getAbsBankLength() {
+        return this.absBankLength;
     },
     get getDuneWidth() {
         return this.width
@@ -324,8 +328,8 @@ export const preventions = {
 
 export const seaBees = {
     name: "seabees",
-    height: 0.08,
-    width: 0.05,
+    height: 0.066667,
+    width: 0.015,
     length: 0,          // x-position of sea-bees
     waveDecrease: 0.3,
     yPos: 0,
@@ -425,7 +429,7 @@ export const house = {
     length: 0,
     xPos: 0,
     value: 0,
-    dunePos: 0.01,
+    dunePos: 0.03,
 
     get getHeight() {
         return this.height;
