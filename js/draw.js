@@ -314,8 +314,9 @@ function skipYears() {
 function incrementYear() {
     var seaRise = document.getElementById("seaRiseSlider").value;
     canvasProp.incrementYear()
-    sea.increaseSeaRise(seaRise / 100);    // meters to cm
-    preventions.increaseBudget(10000);
+    sea.increaseSeaRise(seaRise / 50);    // sea rise next 50 years -> to 1 year avg
+    var budgetIncr = 116500 * (1 + (canvasProp.getYear / 100))  // 1% budget increase every year
+    preventions.increaseBudget(budgetIncr);
     checkHouseFalling()
     decreaseBeach()
     calcDuneErosion()
@@ -599,7 +600,7 @@ function drawSideTide(canvas) {
 }
 
 function drawSideMaxWave(canvas) {
-    var waveHeight = maxWave.getHeight / 4  // factored down by 75%
+    var waveHeight = maxWave.getHeight
     var tH = tide.getHeight
     const cH = canvasProp.getCanvasHeight
     const cW = canvasProp.getCanvasWidth
