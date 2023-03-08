@@ -56,10 +56,10 @@ export const beach = {
     width: 0.7,
     slopeWidth: 0.7,     
     minHeight: 0.85,
-    maxHeight: 0.65,
-    slope: 0.28571,      // rise/run => min
+    maxHeight: 0.55,
+    slope: 0.428571,      // rise/run => min
     absMinHeight: 0.85,
-    absMaxHeight: 0.65,
+    absMaxHeight: 0.55,
     lifeSpan: 0,
     heightDecreaseRate: 0,
 
@@ -138,11 +138,11 @@ export const beach = {
 // Beach object and relevant functions
 // Attributes in terms of % of canvas
 export const dune = {
-    height: 0.15,
+    height: 0.08333,
     bankLength: 0.05,
     absBankLength: 0.05,
     width: 0.25,
-    slope: 15,
+    slope: 1.66666,
 
     get getDuneHeight() {
         return this.height
@@ -188,8 +188,8 @@ export const dune = {
 
 export const sea = {
     totalSeaRise: 0,    // % of canvas
-    length: 0,        // % of canvas
-    height: 0,     // % of canvas
+    length: 0.35,        // % of canvas
+    height: 0.15,     // % of canvas
 
     get getSeaRise() {
         return this.totalSeaRise;
@@ -300,8 +300,8 @@ export const maxWave = {
 }
 
 export const preventions = {
-    // budget: 116500,
-    budget: 100000000,
+    budget: 116500,
+    // budget: 100000000,
     bought: [],
 
     get getBudget() {

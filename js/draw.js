@@ -330,7 +330,7 @@ const onMouseMove = (e) =>{
 
 function skipYears() {
     for (let i = 0; i < 5; i++) {       // skips 5 years
-        if (canvasProp.getYear < 50) {
+        if (canvasProp.getYear < 77) {
             incrementYear()
         }
     }
@@ -339,7 +339,7 @@ function skipYears() {
 function incrementYear() {
     var seaRise = document.getElementById("seaRiseSlider").value;
     canvasProp.incrementYear()
-    sea.increaseSeaRise(seaRise / 50);    // sea rise next 50 years -> to 1 year avg
+    sea.increaseSeaRise(seaRise / 77);    // sea rise next 50 years -> to 1 year avg
     var budgetIncr = 116500 * (1 + (canvasProp.getYear / 100))  // 1% budget increase every year
     preventions.increaseBudget(budgetIncr);
     checkHouseFalling()
@@ -372,7 +372,7 @@ function calcDuneErosion() {
     if(preventions.bought.length > 0) {
         var furtherestPrev = preventions.bought[preventions.bought.length - 1]
         var prevEnd = furtherestPrev.getLength + (furtherestPrev.getWidth / 2)
-        console.log("Prev: " + prevEnd + ", Sea: " + sea.getLength + ", Tide: " + tide.getLength)
+        // console.log("Prev: " + prevEnd + ", Sea: " + sea.getLength + ", Tide: " + tide.getLength)
         if ((sea.getLength > prevEnd) || (tide.getLength > prevEnd)) {
             if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) < beach.getBeachMaxHeight) {
                 var erosionRate = ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) - beach.getBeachMaxHeight) * -1;
@@ -475,7 +475,7 @@ function checkHouseFalling() {
     for(var i = 0; i < 2; i++) {
         if (i > 0) {distRow = 0.13;}
         const tempHouse = housesArr.getHouses[i * 8]
-        if ( tide.getLength > (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + tempHouse.getWidth)) {
+        if ( tide.getLength > (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + (tempHouse.getWidth /2))) {
             for(var j = i; j < ((1 + i) * 8); j++) {
                 const tHouse = housesArr.getHouses[j]
                 tHouse.setStatus = true;
