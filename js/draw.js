@@ -147,7 +147,7 @@ timeSlider.on("input", function() {
 
 var waveSlider = d3.select("#maxWaveHeightSlider");
 waveSlider.on("input", function() {
-    maxWave.setHeight = this.value;
+    maxWave.setHeight = this.value / 2; // divided by two to get avg sea height to peak of wave
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
     else {drawAerialCanvas(canvas)}
 });
@@ -181,7 +181,7 @@ function setSelectedTide() {
 }
 
 function setSelectWaveHeight() {
-    maxWave.setHeight = document.getElementById('maxWaveHeightSlider').value
+    maxWave.setHeight = document.getElementById('maxWaveHeightSlider').value / 2;
 }
 
 const seaWallSelected = document.getElementById('seawall');
@@ -251,9 +251,11 @@ function purchasePrevention() {
             preventions.decreaseBudget(purchaseCost)
             document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
             if (prevention.id != "sand") {
-                let canvasElem = document.querySelector('#canvas')
+                document.addEventListener('mousemove', onMouseMove);
+                let canvasElem = document.querySelector('#preventionCurser')
                 canvasElem.addEventListener("click", function handler(e) {
-                    var clickPos = getMousePosCanvas(canvasElem, e)
+                    var clickPos = getMousePosCanvas(e)
+                    document.removeEventListener('mousemove', onMouseMove);
                     if (prevention.id == "seabees") {
                         const seaBee = Object.create(seaBees)
                         seaBee.setLength = clickPos + (seaBee.getWidth / 2);
@@ -292,14 +294,31 @@ function purchasePrevention() {
 }
 
 // Gets position of mouse click from user as % of canvas
-function getMousePosCanvas(canvas, event) {
+function getMousePosCanvas(event) {
+    let canvas = document.getElementById('canvas');
     let rect = canvas.getBoundingClientRect();
     let x = (event.clientX - rect.left) / canvasProp.getCanvasWidth;
     let y = (event.clientY - rect.top) / canvasProp.getCanvasHeight;
+    preventionCurser.style.display = "none";
     if (canvasProp.getState == 0) {return x}
     else {return (1 - y)}
 }
 
+let preventionCurser = document.getElementById('preventionCurser');
+const onMouseMove = (e) =>{
+    let canvas = document.getElementById('canvas');
+    let rect = canvas.getBoundingClientRect();
+    if ((rect.left < e.pageX && ((rect.right - ((rect.right- rect.left) * (1-beach.getBeachWidth))) > e.pageX)) && (rect.top < e.pageY && rect.bottom > e.pageY)) {
+        preventionCurser.style.display = "block";
+        let x = (e.pageX - rect.left) / canvasProp.getCanvasWidth;
+        let yPos = beach.getBeachMinHeight - (x * beach.getBeachSlope);
+        preventionCurser.style.left = e.pageX + 'px';
+        preventionCurser.style.top = (rect.top + ((rect.bottom-rect.top) * yPos)) + 'px';
+        // preventionCurser.style.top = e.pageY + 'px';
+    } else {
+        preventionCurser.style.display = "none";
+    }
+}
 
 // *************************** Main Draw Functions **********************************
 
@@ -607,14 +626,12 @@ function drawSideMaxWave(canvas) {
     
     var seaH =  cH * (beach.getAbsMinHeight - sea.getHeight - tH)
     // Before Preventions
-    var maxUnbroken = tide.getLength;
+    var maxUnbroken = beach.getBeachWidth;
     var j = 0
     for (var j; j < preventions.bought.length; j++) {
         if (maxUnbroken > preventions.bought[j].getLength) {
-            if (cH * (preventions.bought[j].getYPos - preventions.bought[j].getHeight) <= seaH) {
-                maxUnbroken = preventions.bought[j].getLength
-                break;
-            }
+            maxUnbroken = preventions.bought[j].getLength
+            break;
         }
     }
     
@@ -629,45 +646,73 @@ function drawSideMaxWave(canvas) {
         } else {
             end = beach.getSlopeWidth;
         }
+        var prevHeight = cH * (prev.getYPos - prev.getHeight)
         if (prev.name == "seabees") {
-            if (cH * (prev.getYPos - prev.getHeight) <= seaH) {
+            if (prevHeight <= seaH) {
                 waveHeight = waveHeight * prev.getWaveDecrease
+            } else {
+                waveHeight = waveHeight * 0.6;  // seabee only 40% decrease in wave height if sea & tide is higher than seabee
             }
+        canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, false)
         } else if (prev.name == "seawall" || prev.name == "sand") {
-            if (cH * (prev.getYPos - prev.getHeight) <= seaH) {
-                waveHeight = 0
+            if (prevHeight <= seaH) {
+                var excessWave = (prev.getYPos - prev.getHeight) - (beach.getAbsMinHeight - sea.getHeight - tH - waveHeight)
+                waveHeight = excessWave
+                canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, true)
+            } else {
+                waveHeight = waveHeight * 0.8;
+                canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, false)
             }
         }
-        canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight)
     }
     
     return canvas
 }
 
-function drawSideWave(canvas, tH, cW, cH, xmin, xmax, waveH) {
+function drawSideWave(canvas, tH, cW, cH, xmin, xmax, waveH, broken) {
     var line = [];
     var highLow = 0;
-    for (var i = xmin; i < xmax; i = i + 0.05) {
-        var variableT = 0;
-        if (highLow % 2 != 0) {
-            variableT = waveH
+    var lineFunction = null;
+    if (broken == true) {
+        // line = [
+        //     {"x": cW * xmin, "y": cH * beach.getAbsMinHeight},
+        //     {"x": cW * xmin, "y": cH * (beach.getAbsMinHeight - waveH)},
+        //     {"x": cW * xmax, "y": cH * (beach.getAbsMinHeight - waveH)},
+        //     {"x": cW * xmax, "y": cH * beach.getAbsMinHeight},
+        //     {"x": cW * xmin, "y": cH * beach.getAbsMinHeight},
+        // ];
+        for (var i = xmin; i < xmax; i = i + 0.09) {
+            var variableT = 0;
+            if (highLow % 2 != 0) {
+                variableT = waveH
+            }
+            var height = cH * (beach.getAbsMinHeight - variableT)
+            line[highLow] = {"x": cW * i, "y": height}
+            highLow = highLow + 1;
         }
-        var height = cH * (beach.getAbsMinHeight - sea.getHeight - tH - variableT)
-        line[highLow] = {"x": cW * i, "y": height}
-        highLow = highLow + 1;
+        line.push({"x": cW * xmax, "y": cH * (beach.getAbsMinHeight)})
+    } else {
+        for (var i = xmin; i < xmax; i = i + 0.09) {
+            var variableT = 0;
+            if (highLow % 2 != 0) {
+                variableT = waveH
+            }
+            var height = cH * (beach.getAbsMinHeight - sea.getHeight - tH - variableT)
+            line[highLow] = {"x": cW * i, "y": height}
+            highLow = highLow + 1;
+        }
+        line.push({"x": cW * xmax, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tH)})
     }
-    line.push({"x": cW * xmax, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tH)})
 
-    if (line != []) {
-        var lineFunction = d3.line()
-            .x(function(d) { return d.x; })
-            .y(function(d) { return d.y; })
-            .curve(d3.curveNatural);
+    lineFunction = d3.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; })
+        .curve(d3.curveNatural);
 
-        canvas.append("path")
-            .attr("d", lineFunction(line))
-            .attr("fill", "#ABDCFB")
-    }
+    canvas.append("path")
+        .attr("d", lineFunction(line))
+        .attr("fill", "#ABDCFB")
+
     return canvas
 }
 
