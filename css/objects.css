@@ -116,10 +116,16 @@
 }
 
 #preventionCurser {
-    position:absolute;
-    transform:translate(-50%,-50%);
-    height:35px;
+    position: absolute;
+    transform: translate(-50%,-50%);
+    opacity: 0.5;
+    /* height:35px;
     width:35px;
     border-radius:50%;
-    border:2px solid black;
-  }
+    border:2px solid black; */
+}
+
+#preventionCurser img {
+    width: 20px;
+    height: auto;
+}

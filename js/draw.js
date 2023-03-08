@@ -304,17 +304,23 @@ function getMousePosCanvas(event) {
     else {return (1 - y)}
 }
 
+// See through prevention to help with placement
 let preventionCurser = document.getElementById('preventionCurser');
 const onMouseMove = (e) =>{
+    var prevention = getSelectedPrevention()
     let canvas = document.getElementById('canvas');
     let rect = canvas.getBoundingClientRect();
     if ((rect.left < e.pageX && ((rect.right - ((rect.right- rect.left) * (1-beach.getBeachWidth))) > e.pageX)) && (rect.top < e.pageY && rect.bottom > e.pageY)) {
         preventionCurser.style.display = "block";
+        if (prevention.id =="seawall") {
+            document.getElementById('preventionCurser').innerHTML = '<img src="' + "imgs/seaWall-1m.png" + '" />';
+        } else {
+            document.getElementById('preventionCurser').innerHTML = '<img src="' + "imgs/seaBee-1m.png" + '" />';
+        }
         let x = (e.pageX - rect.left) / canvasProp.getCanvasWidth;
-        let yPos = beach.getBeachMinHeight - (x * beach.getBeachSlope);
+        let yPos = beach.getBeachMinHeight - (x * beach.getBeachSlope) - 0.03;
         preventionCurser.style.left = e.pageX + 'px';
         preventionCurser.style.top = (rect.top + ((rect.bottom-rect.top) * yPos)) + 'px';
-        // preventionCurser.style.top = e.pageY + 'px';
     } else {
         preventionCurser.style.display = "none";
     }

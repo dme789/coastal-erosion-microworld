@@ -330,7 +330,7 @@ export const preventions = {
 export const seaBees = {
     name: "seabees",
     height: 0.066667,
-    width: 0.015,
+    width: 0.02,
     length: 0,          // x-position of sea-bees
     waveDecrease: 0.3,
     yPos: 0,
@@ -374,7 +374,7 @@ export const seaBees = {
 export const seaWalls = {
     name: "seawall",
     height: 0.08,
-    width: 0.025,
+    width: 0.02,
     length: 0,
     yPos: 0,
 
