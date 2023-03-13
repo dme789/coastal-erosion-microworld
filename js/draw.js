@@ -416,7 +416,8 @@ function winDetection() {
     infoField.style.display = "none";
     infoHeader.style.display = "none";
     resultHolder.style.display = "block";
-    var canvasElem = document.getElementById("canvas");
+    document.getElementById("endSpend").innerHTML = preventions.getTotalSpent.toLocaleString();
+    // var canvasElem = document.getElementById("canvas");
     // canvasElem.style.opacity = "0.8";
 }
 
