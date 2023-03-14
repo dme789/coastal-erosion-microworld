@@ -27,7 +27,7 @@ for (var i = 0; i < 8; i++) {
 }
 
 drawSideCanvas(canvas)
-document.getElementById("currYear").innerHTML = 0;
+document.getElementById("currYear").innerHTML = 2023;
 document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
 document.getElementById("purchaseAmountTot").innerHTML = 0;
 
@@ -397,15 +397,16 @@ function incrementYear() {
     var seaRise = document.getElementById("seaRiseSlider").value;
     canvasProp.incrementYear()
     sea.increaseSeaRise(seaRise / 77);    // sea rise next 50 years -> to 1 year avg
-    // var budgetIncr = 116500 * (1 + (canvasProp.getYear / 100))  // 1% budget increase every year
-    // preventions.increaseBudget(budgetIncr);
+    const budgetInput = document.getElementById("budget-input");
+    var budgetIncr = Number(budgetInput.value);   // 1% budget increase every year
+    preventions.increaseBudget(budgetIncr);
     checkHouseFalling()
     decreaseBeach()
     calcDuneErosion()
     document.getElementById("timeSlider").value = canvasProp.getYear;
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
     else {drawAerialCanvas(canvas)}
-    document.getElementById("currYear").innerHTML = canvasProp.getYear;
+    document.getElementById("currYear").innerHTML = 2023 + canvasProp.getYear;
     document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
 }
 
