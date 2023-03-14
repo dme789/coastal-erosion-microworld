@@ -203,8 +203,15 @@ export const dune = {
     erode: function(erosionRate) {
         if(this.slope <= -1) {
             this.setDuneBankLength = 0;
-        } else if (tide.getLength > beach.getSlopeWidth) {
+        } else if (tide.getLength > beach.getSlopeWidth) {                  // Normal Erosion
             var erosionLength = (tide.getLength - beach.getBeachWidth);
+            if (this.slope < 0) {
+                erosionLength = erosionLength / 2;
+            }
+            this.setDuneBankLength = this.getDuneBankLength - erosionRate;
+            beach.setBeachWidth = beach.getBeachWidth + erosionRate;
+        } else if (beach.getBeachWidth + maxWave.getWashLength > beach.getSlopeWidth) {     // Wave Erosion
+            var erosionLength = maxWave.getWashLength / 2;          // 50% power reduction due to sea not fully extended
             if (this.slope < 0) {
                 erosionLength = erosionLength / 2;
             }
