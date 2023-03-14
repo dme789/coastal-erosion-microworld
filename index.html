@@ -69,12 +69,17 @@
             <div class="col-2"></div>
         </div>
 
+        <!-- Tooltip newLine =  &#x0a -->
+
+
         <div class="row">
             <div class="col-2">
                 <div class="card control-panel border rounded-3">
                     <h4 class="card-title">Weather Variables</h4>
                     <div class="control-option">
-                        <h6 data-bs-toggle="tooltip" data-bs-placement="top" title="Some info text!">Sea Rise</h6>
+                        <h6 data-bs-toggle="tooltip" data-bs-placement="top" 
+                            title="The rate you set is for the entire simulation.&#x0aNot per year!">Sea Rise
+                        </h6>
                         <div class="range">
                             <div class="field">
                                 <div class="value left">0.5m</div>
@@ -84,7 +89,9 @@
                         </div>
                     </div>
                     <div class="control-option">
-                        <h6>Max Wave Height</h6>
+                        <h6 data-bs-toggle="tooltip" data-bs-placement="top" 
+                        title="The height you set is the wave height from crest to trough.&#x0aThis means you will only see the top half of the wave in the simulation.&#x0aThis is exactly half of the value you decide to set!">
+                        Max Wave Height</h6>
                         <div class="range">
                             <div class="field">
                                 <div class="value left">6m</div>
