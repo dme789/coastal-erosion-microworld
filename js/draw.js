@@ -408,6 +408,7 @@ function incrementYear() {
     else {drawAerialCanvas(canvas)}
     document.getElementById("currYear").innerHTML = 2023 + canvasProp.getYear;
     document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
+    if(canvasProp.getHousesDestroyed == true) {winDetection()}
 }
 
 function winDetection() {
@@ -418,6 +419,7 @@ function winDetection() {
     infoHeader.style.display = "none";
     resultHolder.style.display = "block";
     document.getElementById("endSpend").innerHTML = preventions.getTotalSpent.toLocaleString();
+    document.getElementById("housesDestroyed").innerHTML = (housesArr.getNumHousesDestroyed / housesArr.getHouses.length) * 100;
     // var canvasElem = document.getElementById("canvas");
     // canvasElem.style.opacity = "0.8";
 }
@@ -542,17 +544,24 @@ function drawRealDimLabels(canvas, xLabel, yLabel) {
 
 function checkHouseFalling() {
     var distRow = 0;
+    var tempStatus = true;
     for(var i = 0; i < 2; i++) {
         if (i > 0) {distRow = 0.13;}
         const tempHouse = housesArr.getHouses[i * 8]
         if ( tide.getLength > (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + (tempHouse.getWidth /2))) {
             for(var j = i; j < ((1 + i) * 8); j++) {
                 const tHouse = housesArr.getHouses[j]
-                tHouse.setStatus = true;
-                tHouse.setHeight = 0.05;
+                if (tHouse.getStatus == false) {
+                    tHouse.setStatus = true;
+                    tHouse.setHeight = 0.05;
+                    housesArr.incrNumHousesDestroyed()
+                }
             }
+        } else {
+            tempStatus = false;
         }
     }
+    canvasProp.setHousesDestroyed = tempStatus;
 }
 
 

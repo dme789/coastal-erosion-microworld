@@ -11,6 +11,7 @@ export const canvasProp = {
     weatherStatus: false,
     budgetStatus: false,
     simStatus: false,
+    housesDestroyed: false,
 
     get getCanvasHeight() {
         return this.height;
@@ -65,6 +66,12 @@ export const canvasProp = {
     },
     set setSimFinished(val) {
         this.simStatus = val;
+    },
+    get getHousesDestroyed() {
+        return this.housesDestroyed;
+    },
+    set setHousesDestroyed(val) {
+        this.housesDestroyed = val;
     },
     incrementYear: function() {
         this.year = this.year + 1;
@@ -444,9 +451,16 @@ export const seaWalls = {
 
 export const housesArr = {
     houses: [],
+    numHousesDestroyed: 0,
 
     get getHouses() {
         return this.houses;
+    },
+    get getNumHousesDestroyed() {
+        return this.numHousesDestroyed;
+    },
+    incrNumHousesDestroyed: function() {
+        this.numHousesDestroyed = this.numHousesDestroyed + 1;
     }
 }
 
