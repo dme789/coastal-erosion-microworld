@@ -42,7 +42,7 @@ function drawSideCanvas(canvas) {
     setSelectWaveHeight()
     canvas = drawBackground(canvas)
     canvas = drawSideSea(canvas)
-    canvas = drawSideMaxWave(canvas)
+    if (canvasProp.getStateWaves == 1) {canvas = drawSideMaxWave(canvas)}
     canvas = drawSideTide(canvas);
     canvas = drawSidePreventions(canvas)
     canvas = drawSideBeach(canvas)
@@ -137,6 +137,19 @@ function userDimensions() {
     }
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)} else {drawAerialCanvas(canvas)}
 }
+
+// const wavesButton = document.getElementById('sHWaves');
+// wavesButton.addEventListener('click', userWaves);
+// function userWaves() {
+//     if (canvasProp.getStateWaves == 0) {
+//         canvasProp.setStateWaves = 1
+//         document.getElementById("sHWaves").innerHTML = "Show Waves";
+//     } else {
+//         canvasProp.setStateWaves = 0
+//         document.getElementById("sHWaves").innerHTML = "Hide Waves";
+//     }
+//     if (canvasProp.getState == 0) {drawSideCanvas(canvas)} else {drawAerialCanvas(canvas)}
+// }
 
 var timeSlider = d3.select("#timeSlider");
 timeSlider.on("input", function() {
@@ -349,6 +362,10 @@ function budgetInput() {
             document.getElementById("playButton").disabled = false;
             document.getElementById("timeSlider").disabled = false;
             document.getElementById("confirmedPurchase").disabled = false;
+
+            document.getElementById("seabees").disabled = false;
+            document.getElementById("seawall").disabled = false;
+            document.getElementById("sand").disabled = false;
         }
     }
 }
@@ -362,7 +379,6 @@ function setWeather() {
     setSelectWaveHeight()
     document.getElementById("seaRiseSlider").disabled = true;
     document.getElementById("maxWaveHeightSlider").disabled = true;
-    document.getElementById("radioOptions").disabled = true;
     document.getElementById("lowTide").disabled = true;
     document.getElementById("averageTide").disabled = true;
     document.getElementById("highTide").disabled = true;
@@ -371,6 +387,10 @@ function setWeather() {
         document.getElementById("playButton").disabled = false;
         document.getElementById("timeSlider").disabled = false;
         document.getElementById("confirmedPurchase").disabled = false;
+
+        document.getElementById("seabees").disabled = false;
+        document.getElementById("seawall").disabled = false;
+        document.getElementById("sand").disabled = false;
     }
 }
 
@@ -423,6 +443,7 @@ function winDetection() {
     resultHolder.style.display = "block";
     document.getElementById("endSpend").innerHTML = preventions.getTotalSpent.toLocaleString();
     document.getElementById("housesDestroyed").innerHTML = (housesArr.getNumHousesDestroyed / housesArr.getHouses.length) * 100;
+    document.getElementById("duneLost").innerHTML = Math.round((dune.getLengthLost * canvasProp.getRealLength) * 100) / 100;
     // var canvasElem = document.getElementById("canvas");
     // canvasElem.style.opacity = "0.8";
 }

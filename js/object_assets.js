@@ -8,6 +8,7 @@ export const canvasProp = {
     state: 0,       // 0 = side view, 1 = aerial view
     year: 0,
     dimensions: 0,
+    wavesState: 1,
     weatherStatus: false,
     budgetStatus: false,
     simStatus: false,
@@ -48,6 +49,12 @@ export const canvasProp = {
     },
     set setStateDim(val) {
         this.dimensions = val;
+    },
+    get getStateWaves() {
+        return this.wavesState;
+    },
+    set setStateWaves(val) {
+        this.wavesState = val;
     },
     get getWeatherStatus() {
         return this.weatherStatus;
@@ -171,6 +178,7 @@ export const dune = {
     absBankLength: 0.05,
     width: 0.25,
     slope: 1.66666,
+    lengthLost: 0,
 
     get getDuneHeight() {
         return this.height
@@ -194,6 +202,12 @@ export const dune = {
     get getSlope() {
         return this.slope;
     },
+    get getLengthLost() {
+        return this.lengthLost;
+    },
+    increaseLengthLost: function(val) {
+        this.lengthLost = this.lengthLost + val;
+    },
     reCalcSlope: function() {
         this.slope = this.height / this.bankLength
     },
@@ -210,6 +224,7 @@ export const dune = {
             }
             this.setDuneBankLength = this.getDuneBankLength - erosionRate;
             beach.setBeachWidth = beach.getBeachWidth + erosionRate;
+            this.increaseLengthLost(erosionRate)
         } else if (beach.getBeachWidth + maxWave.getWashLength > beach.getSlopeWidth) {     // Wave Erosion
             var erosionLength = maxWave.getWashLength / 2;          // 50% power reduction due to sea not fully extended
             if (this.slope < 0) {
@@ -217,6 +232,7 @@ export const dune = {
             }
             this.setDuneBankLength = this.getDuneBankLength - erosionRate;
             beach.setBeachWidth = beach.getBeachWidth + erosionRate;
+            this.increaseLengthLost(erosionRate)
         }
     }
 };
