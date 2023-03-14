@@ -317,6 +317,7 @@ export const tide = {
 export const maxWave = {
     height: 0,
     length: 0,
+    washLength: 0,
 
     get getHeight() {
         return this.height;
@@ -324,6 +325,33 @@ export const maxWave = {
     set setHeight(val) {
         this.height = (1 / canvasProp.getRealHeight) * val;
         this.length = tide.getLength
+    },
+    get getWashLength() {
+        return this.washLength;
+    },
+    set setWashLength(val) {
+        this.washLength = val;
+    },
+    calculateWaveWashLength: function() {
+        // var height = sea.getHeight + tide.getHeight;
+        // if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) >= beach.getBeachMaxHeight) {
+        //     this.washLength = (height - (beach.getAbsMinHeight - beach.getBeachMinHeight)) / beach.getBeachSlope;
+        // } else if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) >= (beach.getAbsMaxHeight - dune.getDuneHeight)) {
+        //     var duneWaterLine = beach.getBeachMaxHeight - (beach.getBeachMinHeight - height);
+        //     this.washLength = beach.getBeachWidth + (duneWaterLine/ dune.getSlope);
+        // } else {
+        //     this.washLength = 1
+        // }
+
+        var height = sea.getHeight + tide.getHeight;
+        if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) >= beach.getBeachMaxHeight) {
+            this.washLength = 0;
+        } else if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) >= (beach.getAbsMaxHeight - dune.getDuneHeight)) {
+            var duneWaterLine = beach.getBeachMaxHeight - (beach.getBeachMinHeight - height);
+            this.washLength = duneWaterLine/dune.getSlope;
+        } else {
+            this.washLength = 1 - beach.getBeachWidth
+        }
     }
 }
 

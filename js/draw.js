@@ -732,7 +732,8 @@ function drawSideMaxWave(canvas) {
         if (i+1 < preventions.bought.length){
             end = preventions.bought[i+1].getLength - (preventions.bought[i+1].getWidth / 2)
         } else {
-            end = beach.getBeachWidth;
+            maxWave.calculateWaveWashLength()
+            end = beach.getBeachWidth + maxWave.getWashLength;
         }
         var prevHeight = cH * (prev.getYPos - prev.getHeight)
         if (prev.name == "seabees") {
@@ -752,7 +753,7 @@ function drawSideMaxWave(canvas) {
                 } else {waveHeight = maxExcessWave}
                 canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, true)
             } else {
-                waveHeight = waveHeight * 0.6;
+                waveHeight = waveHeight * 0.6; // wall only 40% decrease in wave height if sea & tide is higher than wall
                 canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, false)
             }
         }
