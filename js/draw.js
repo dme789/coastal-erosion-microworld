@@ -1121,8 +1121,6 @@ function drawHouseWindows(canvas, tempHouse, distRow) {
             {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + windowNo + windowGap), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight - (tempHouse.getHeight * 0.55))}
         ];
 
-        console.log(line)
-
         var lineFunction = d3.line()
             .x(function(d) { return d.x; })
             .y(function(d) { return d.y; });
