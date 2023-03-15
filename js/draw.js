@@ -64,6 +64,7 @@ function drawAerialCanvas(canvas) {
     canvas = drawAerialDune(canvas)
     canvas = drawAerialSea(canvas)
     if (tideOption != 1) { canvas = drawAerialTide(canvas);}
+    if (canvasProp.getStateWaves == 1) {canvas = drawAerialWave(canvas)}
     canvas = drawAerialPreventions(canvas)
     canvas = drawAerialHouses(canvas)
     canvas = drawBorder(canvas)
@@ -203,7 +204,6 @@ function setSelectedTide() {
 }
 
 function setSelectWaveHeight() {
-    console.log(document.getElementById('maxWaveHeightSlider').value / 2)
     maxWave.setHeight = document.getElementById('maxWaveHeightSlider').value / 2;
     
 }
@@ -1190,15 +1190,50 @@ function drawAerialTide(canvas) {
     return canvas
 }
 
+function drawAerialWave(canvas) {
+    const cH = canvasProp.getCanvasHeight
+    const cW = canvasProp.getCanvasWidth
+
+        var line = [
+            {"x": 0, "y": cH},
+            {"x": 0, "y": cH * (1 - beach.getBeachWidth + maxWave.getWashLength)},
+            {"x": cW, "y": cH * (1 - beach.getBeachWidth + maxWave.getWashLength)},
+            {"x": cW, "y": cH},
+            {"x": 0, "y": cH },
+        ];
+    
+        var lineFunction = d3.line()
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; });
+        
+        canvas.append("path")
+            .attr("d", lineFunction(line))
+            .attr("fill", "#ABDCFB")
+
+    return canvas
+}
+
 function drawAerialPreventions(canvas) {
     for(var i = 0; i < preventions.bought.length; i++) {
         var prev = preventions.bought[i]
         if (prev.name == "seabees") {
             canvas = drawAerialSeaBee(prev, canvas)
         } else if (prev.name == "seawall") {
+            var waveH = beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight - maxWave.getHeight
             var seaH =  beach.getBeachMinHeight - sea.getHeight - tide.getHeight
+
+            console.log("WaveH: " + waveH)
+            console.log("SeaH: " + seaH)
+            console.log("PrevH: " + (prev.getYPos - prev.getHeight))
+
             if (prev.getYPos - prev.getHeight <= seaH) {
-                canvas = drawAerialSeaWall(prev, canvas)
+                if (canvasProp.getStateWaves == 1) {
+                    if (prev.getYPos - prev.getHeight <= waveH) {
+                        canvas = drawAerialSeaWall(prev, canvas)
+                    }
+                } else {
+                    canvas = drawAerialSeaWall(prev, canvas)
+                }
             }
         }
     }
