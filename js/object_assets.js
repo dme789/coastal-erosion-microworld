@@ -1,17 +1,17 @@
 // Canvas properties
 export const canvasProp = {
-    height: 0,
-    width: 0,
+    height: 0, // div element height
+    width: 0,   // div element width
     realHeight: 15,
     realWidth: 1000,
     realLength: 100,
-    state: 0,       // 0 = side view, 1 = aerial view
-    year: 0,
-    dimensions: 0,
-    wavesState: 1,
-    weatherStatus: false,
-    budgetStatus: false,
-    simStatus: false,
+    state: 0,   // 0 = side view, 1 = aerial view
+    year: 0,    // year of sim    
+    dimensions: 0,  // 0 = dimensions not shown
+    wavesState: 1,  // 1 = waves shown
+    weatherStatus: false, // true once weather is set by user
+    budgetStatus: false, // true once weather is set by user
+    simStatus: false,   
     housesDestroyed: false,
 
     get getCanvasHeight() {
