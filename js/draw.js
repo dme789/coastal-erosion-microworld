@@ -126,6 +126,7 @@ function reDrawAerialCanvas() {
     drawAerialCanvas(canvas)
 }
 
+// detects change in showing and hiding dimensions
 const dimensionsOption = document.getElementById('sHDimensionsB');
 dimensionsOption.addEventListener('click', userDimensions);
 function userDimensions() {
@@ -290,7 +291,7 @@ function purchasePrevention() {
                 var sandH = (getUserPreventionHeight() / (2 * canvasProp.getRealHeight));
                 beach.setBeachMinHeight = beach.getBeachMinHeight - sandH;
                 beach.setBeachMaxHeight = beach.getBeachMaxHeight - sandH;
-                beach.setLifeSpan = 15;
+                beach.setLifeSpan = 10;
                 beach.calcDecreaseRate();
                 sea.calcSeaLength();
                 if (canvasProp.getState == 0) {
@@ -851,7 +852,7 @@ function drawSideMaxWave(canvas) {
                 waveHeight = waveHeight * prev.getWaveDecrease
                 canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, true)
             } else {
-                waveHeight = waveHeight * 0.7;  // seabee only 30% decrease in wave height if sea & tide is higher than seabee
+                waveHeight = waveHeight * 0.75;  // seabee only 25% decrease in wave height if sea & tide is higher than seabee
                 canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, true)
             }
         } else if (prev.name == "seawall" || prev.name == "sand") {

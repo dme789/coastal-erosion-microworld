@@ -401,7 +401,7 @@ export const seaBees = {
     height: 0.066667,
     width: 0.02,
     length: 0,          // x-position of sea-bees
-    waveDecrease: 0.3,
+    waveDecrease: 0.5,
     yPos: 0,
 
     get getName() {
