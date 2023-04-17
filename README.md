@@ -2,7 +2,7 @@
 #### Author: Dominique Meudec
 
 This project was completed as part of the dissertation component of the Integerated MCS in Computer Science at 
-Trinity College Dublin
+Trinity College Dublin.
 
 ## Installation
 
