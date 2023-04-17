@@ -1,4 +1,4 @@
-// Canvas properties
+// Propeties of the visualisation element and microworld rules.
 export const canvasProp = {
     height: 0, // div element height
     width: 0,   // div element width
@@ -11,8 +11,8 @@ export const canvasProp = {
     wavesState: 1,  // 1 = waves shown
     weatherStatus: false, // true once weather is set by user
     budgetStatus: false, // true once weather is set by user
-    simStatus: false,   
-    housesDestroyed: false,
+    simStatus: false,   // true once simulation is over   
+    housesDestroyed: false,     // true when all houses destroyed
 
     get getCanvasHeight() {
         return this.height;
@@ -214,6 +214,8 @@ export const dune = {
     reCalculateSlope: function(decrease) {
         this.slope = (this.height + decrease) / this.bankLength;
     },
+    // this function erodes the dune by the given erosionRate
+    // two erosion types occur, 
     erode: function(erosionRate) {
         if(this.slope <= -1) {
             this.setDuneBankLength = 0;

@@ -4,6 +4,17 @@
 This project was completed as part of the dissertation component of the Integerated MCS in Computer Science at 
 Trinity College Dublin.
 
+## Directory Details
+
+- index.html - HTML file that produces the content for the microworld.
+- js
+  - draw.js - contains the D3.js function to visualise the coastal erosion model. Contains functions related
+                to user interaction, drawing functions of objects and microworld gameplay.
+  - object_assets.js - contains the object details and functions related to manipulating those objects.
+- css
+  - objects.css - stylesheet for the entire project.
+- imgs - contains images used in the visualisation of the simulation.  
+
 ## Installation
 
 There are no langauges or packages that are required to be installed to run this code.
